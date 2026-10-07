@@ -464,9 +464,9 @@ class HotelPMS {
                 errorType,
                 message,
                 stack,
-                filename: filename || (error?.fileName), // Assuming 'error' might be passed as an argument directly
-                lineno: lineno || (error?.lineNumber),
-                colno: colno || (error?.columnNumber),
+                filename: filename || null,
+                lineno: lineno || null,
+                colno: colno || null,
                 resolved: false,
                 performedBy: this.authManager?.getCurrentUser()?.name || 'System (pre-auth)'
             };

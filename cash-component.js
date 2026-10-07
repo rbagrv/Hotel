@@ -160,7 +160,7 @@ class CashComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        ${displayTransactions.map((transaction, idx) => this.renderTransactionRow(transaction, data, (currentPage - 1) * pageSize + idx + 1)).join('')}
+                        ${displayTransactions.map((transaction, idx) => this.renderTransactionRow(transaction, data, (page * pageSize) + idx + 1)).join('')}
                     </tbody>
                 </table>
                 </div>
