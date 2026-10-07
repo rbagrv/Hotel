@@ -2,7 +2,9 @@
 
 export default class InventoryComponent {
     constructor() {
-        // ...existing code...
+        if (typeof window !== 'undefined') {
+            window.inventoryComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage
@@ -27,11 +29,12 @@ export default class InventoryComponent {
         const statusVal = this.getFilter('statusVal');
         const unitVal = this.getFilter('unitVal');
 
-        const uniqueCategories = Array.from(new Set(data.inventory.map(i => i.category).filter(Boolean)));
-        const uniqueUnits = Array.from(new Set(data.inventory.map(i => i.unit).filter(Boolean)));
+        const inventoryList = data.inventory || [];
+        const uniqueCategories = Array.from(new Set(inventoryList.map(i => i.category).filter(Boolean)));
+        const uniqueUnits = Array.from(new Set(inventoryList.map(i => i.unit).filter(Boolean)));
         const uniqueStatuses = ["normal", "low"]; // based on stock
 
-        let filtered = data.inventory || [];
+        let filtered = inventoryList;
         if (searchVal) filtered = filtered.filter(i =>
             (i.name && i.name.toLowerCase().includes(searchVal.toLowerCase())) ||
             (i.description && i.description.toLowerCase().includes(searchVal.toLowerCase())) ||

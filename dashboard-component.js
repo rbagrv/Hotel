@@ -10,6 +10,9 @@ export default class DashboardComponent {
     constructor() {
         this.roomsComponent = new RoomsComponent();
         this.clockInterval = null;
+        if (typeof window !== 'undefined') {
+            window.dashboardComponent = this;
+        }
     }
 
     render(data) {

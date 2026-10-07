@@ -1,7 +1,8 @@
-// Services component with search/filter as COLUMN FILTERS
 export default class ServicesComponent {
     constructor() {
-        // ...existing code...
+        if (typeof window !== 'undefined') {
+            window.servicesComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage

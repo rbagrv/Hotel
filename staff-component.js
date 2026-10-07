@@ -3,7 +3,9 @@
 
 export default class StaffComponent {
     constructor() {
-        // ...existing code...
+        if (typeof window !== 'undefined') {
+            window.staffComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage
@@ -42,12 +44,13 @@ export default class StaffComponent {
         const positionVal = this.getFilter('positionVal');
         const startDateVal = this.getFilter('startDateVal');
 
-        const uniqueDepartments = Array.from(new Set(data.staff.map(s=>s.department).filter(Boolean))).sort();
-        const uniqueRoles = Array.from(new Set(data.staff.map(s=>s.role).filter(Boolean))).sort();
-        const uniqueStatuses = Array.from(new Set(data.staff.map(s=>s.status).filter(Boolean)));
-        const uniquePositions = Array.from(new Set(data.staff.map(s=>s.position).filter(Boolean))).sort();
+        const staffList = data.staff || [];
+        const uniqueDepartments = Array.from(new Set(staffList.map(s=>s.department).filter(Boolean))).sort();
+        const uniqueRoles = Array.from(new Set(staffList.map(s=>s.role).filter(Boolean))).sort();
+        const uniqueStatuses = Array.from(new Set(staffList.map(s=>s.status).filter(Boolean)));
+        const uniquePositions = Array.from(new Set(staffList.map(s=>s.position).filter(Boolean))).sort();
 
-        let filtered = data.staff;
+        let filtered = staffList;
         // QUICK: lowercase and trim once for search performance
         const searchValTrimmed = searchVal.toLowerCase().trim();
         if (searchValTrimmed) {

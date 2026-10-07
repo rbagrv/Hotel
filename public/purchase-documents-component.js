@@ -1,6 +1,8 @@
 export default class PurchaseDocumentsComponent {
     constructor() {
-        // ...existing code...
+        if (typeof window !== 'undefined') {
+            window.purchaseDocumentsComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage

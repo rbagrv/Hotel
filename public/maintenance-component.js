@@ -1,7 +1,8 @@
-// Maintenance component with search/filter
 export default class MaintenanceComponent {
     constructor() {
-        // ...existing code...
+        if (typeof window !== 'undefined') {
+            window.maintenanceComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage

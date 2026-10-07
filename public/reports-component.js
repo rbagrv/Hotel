@@ -1,6 +1,9 @@
 // reports-component.js
 export default class ReportsComponent {
     constructor() {
+        if (typeof window !== 'undefined') {
+            window.reportsComponent = this;
+        }
         // Initialize active tab for reports
         if (localStorage.getItem('reportsComponent_activeTab') === null) {
             localStorage.setItem('reportsComponent_activeTab', 'financial');

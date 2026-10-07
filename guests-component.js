@@ -1,5 +1,9 @@
-// Guests component with search and filters - COLUMN FILTERS IN HEADER + PAGINATION (10 per page)
 export default class GuestsComponent {
+    constructor() {
+        if (typeof window !== 'undefined') {
+            window.guestsComponent = this;
+        }
+    }
     // Helper to get filter value from localStorage
     getFilter(key, defaultValue = '') {
         const storedValue = localStorage.getItem(`guestsComponent_${key}`);

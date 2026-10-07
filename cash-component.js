@@ -1,11 +1,9 @@
 // Cash component with search and column filters in headers
 class CashComponent {
     constructor() {
-        // Remove per-instance filters! Always use window._cash* globals so that filter state persists across reloads
-        // (Defensive - previous instance state can get out of sync)
-        // Cache of expensive computed data (balances, sort, account sums), keyed by the data array reference
-        // so it is computed ONCE instead of on every keystroke / page change. A new reference (data reload)
-        // automatically invalidates it.
+        if (typeof window !== 'undefined') {
+            window.cashComponent = this;
+        }
         this._prepared = null;
     }
 

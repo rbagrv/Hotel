@@ -1,6 +1,9 @@
 // Rooms component - Table/List version for managing rooms with column filters in header!
 export default class RoomsComponent {
     constructor() {
+        if (typeof window !== 'undefined') {
+            window.roomsComponent = this;
+        }
         // Initialize active tab for rooms view
         if (localStorage.getItem('roomsComponent_activeTab') === null) {
             localStorage.setItem('roomsComponent_activeTab', 'table'); // Default to table view
@@ -76,13 +79,14 @@ export default class RoomsComponent {
         const floorVal = this.getFilter('floorVal');
         const buildingVal = this.getFilter('buildingVal');
 
-        const uniqueTypes = Array.from(new Set(data.rooms.map(r => r.type).filter(Boolean)));
-        const uniqueCategories = Array.from(new Set(data.rooms.map(r => r.category).filter(Boolean)));
-        const uniqueBuildings = Array.from(new Set(data.rooms.map(r => r.building).filter(Boolean)));
-        const uniqueFloors = Array.from(new Set(data.rooms.map(r => r.floor).filter(f => f !== null && f !== undefined))).sort((a, b) => a - b);
+        const roomsList = data.rooms || [];
+        const uniqueTypes = Array.from(new Set(roomsList.map(r => r.type).filter(Boolean)));
+        const uniqueCategories = Array.from(new Set(roomsList.map(r => r.category).filter(Boolean)));
+        const uniqueBuildings = Array.from(new Set(roomsList.map(r => r.building).filter(Boolean)));
+        const uniqueFloors = Array.from(new Set(roomsList.map(r => r.floor).filter(f => f !== null && f !== undefined))).sort((a, b) => a - b);
         const uniqueStatus = ["available", "occupied", "maintenance"];
 
-        let filteredRooms = data.rooms || [];
+        let filteredRooms = roomsList;
         if (searchVal) {
             filteredRooms = filteredRooms.filter(r =>
                 (r.number && r.number.toLowerCase().includes(searchVal.toLowerCase())) ||

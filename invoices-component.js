@@ -1,7 +1,8 @@
-// Invoices component
 export default class InvoicesComponent {
     constructor() {
-        // Initialize filters and pagination from localStorage
+        if (typeof window !== 'undefined') {
+            window.invoicesComponent = this;
+        }
     }
 
     // Helper to get filter value from localStorage
@@ -32,7 +33,7 @@ export default class InvoicesComponent {
         if (searchVal) {
             const lowerSearchVal = searchVal.toLowerCase();
             filteredInvoices = filteredInvoices.filter(invoice => {
-                const reservation = data.reservations.find(r => r.id === invoice.reservationId);
+                const reservation = (data.reservations || []).find(r => r.id === invoice.reservationId);
                 return (invoice.publicId && invoice.publicId.toLowerCase().includes(lowerSearchVal)) ||
                        (invoice.guestName && invoice.guestName.toLowerCase().includes(lowerSearchVal)) ||
                        (reservation?.publicId && reservation.publicId.toLowerCase().includes(lowerSearchVal));

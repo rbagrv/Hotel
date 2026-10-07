@@ -1,6 +1,8 @@
-// POS component - Sale ONLY, with product search, category filters, and improved UI
 export default class POSComponent {
     constructor() {
+        if (typeof window !== 'undefined') {
+            window.posComponent = this;
+        }
         // Cart is persisted to localStorage so it survives module re-renders/filter changes.
         this.cart = this.loadCart();
         this.cartTotal = this.cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0);

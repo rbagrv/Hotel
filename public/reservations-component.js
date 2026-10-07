@@ -1,6 +1,9 @@
 // Reservations component with Booking.com import (Demo) - Updated for Booking.com columns
 export default class ReservationsComponent {
     constructor() {
+        if (typeof window !== 'undefined') {
+            window.reservationsComponent = this;
+        }
         // Initialize active tab for rooms view
         if (localStorage.getItem('reservationsComponent_activeTab') === null) {
             localStorage.setItem('reservationsComponent_activeTab', 'main'); // Default to main (table) view
