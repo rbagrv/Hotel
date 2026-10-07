@@ -720,7 +720,7 @@ class HotelPMS {
                     reservationsPromise = this.ws.collection(name).getList().then((list) => {
                         this.data[key] = list;
                         if (this.currentModule === RESERVATIONS_KEY || this.currentModule === 'dashboard') {
-                            this.refreshCurrentModule?.();
+                            this.loadModule(this.currentModule, { fromHistory: true });
                         }
                         return list;
                     }).catch((err) => {
@@ -837,18 +837,22 @@ class HotelPMS {
     }
 
     /**
-     * Refreshes the data and re-renders the currently active module.
+     * Refreshes and re-renders the currently active module safely (debounced).
      */
-    async refreshCurrentModule() {
+    refreshCurrentModule() {
         if (!this.currentModule) return;
-        try {
-            // Refresh all data to ensure consistency across modules
-            await this.loadAllData();
-            this.loadModule(this.currentModule, { fromHistory: true });
-            console.log(`Module ${this.currentModule} refreshed successfully.`);
-        } catch (error) {
-            console.error(`Failed to refresh module ${this.currentModule}:`, error);
+        if (this._moduleRefreshDebounce) {
+            clearTimeout(this._moduleRefreshDebounce);
         }
+        this._moduleRefreshDebounce = setTimeout(() => {
+            this._moduleRefreshDebounce = null;
+            try {
+                this.loadModule(this.currentModule, { fromHistory: true });
+                console.log(`Module ${this.currentModule} re-rendered successfully.`);
+            } catch (error) {
+                console.error(`Failed to refresh module ${this.currentModule}:`, error);
+            }
+        }, 150);
     }
     
     /**
