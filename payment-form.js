@@ -109,6 +109,16 @@ export default class PaymentForm {
                         <span>₼${total.toFixed(2)}</span>
                     </div>
                 </div>
+
+                <div class="form-group" style="margin-top: 0.5rem; padding: 0.75rem 1rem; background: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.35); border-radius: 8px;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; margin: 0; font-weight: 600; color: #065f46;">
+                        <input type="checkbox" name="notifyWhatsApp" id="posNotifyWhatsApp_${formId}" checked style="width: 1.15rem; height: 1.15rem; accent-color: #25D366;">
+                        <span><i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.2rem;"></i> Müştəriyə WhatsApp ilə qəbz / bildiriş göndər</span>
+                    </label>
+                    <small style="display: block; margin-top: 0.25rem; margin-left: 1.9rem; color: #475569;">
+                        Satış tamamlanan kimi və ya otaq hesabına yazılan kimi müştəriyə WhatsApp qəbzi göndəriləcək.
+                    </small>
+                </div>
             </form>
         `;
     }
@@ -175,6 +185,16 @@ export default class PaymentForm {
                     </div>
                 </div>
 
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 0.5rem; padding: 0.75rem 1rem; background: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.35); border-radius: 8px;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; margin: 0; font-weight: 600; color: #065f46;">
+                        <input type="checkbox" name="notifyWhatsApp" id="resPaymentNotifyWhatsApp_${formId}" checked style="width: 1.15rem; height: 1.15rem; accent-color: #25D366;">
+                        <span><i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.2rem;"></i> Müştəriyə WhatsApp ilə ödəniş qəbzi göndər</span>
+                    </label>
+                    <small style="display: block; margin-top: 0.25rem; margin-left: 1.9rem; color: #475569;">
+                        Ödəniş qeydə alınan kimi qonağın telefon nömrəsinə təsdiq mesajı göndəriləcək.
+                    </small>
+                </div>
+
             </form>
         `;
     }
@@ -232,6 +252,23 @@ export default class PaymentForm {
 
             await window.app.createCashTransaction(cashTransactionData);
             
+            // WhatsApp Notification for reservation payment
+            const notifyWhatsApp = form.querySelector('[name="notifyWhatsApp"]')?.checked;
+            if (notifyWhatsApp && guest && guest.phone) {
+                try {
+                    const hotelInfo = window.app.getHotelInfo();
+                    const hotelName = hotelInfo?.hotelName || 'Otel';
+                    const resCode = reservation?.publicId || (window.app ? window.app.formatInternalId(reservationId, 'RZ') : reservationId);
+                    const msg = `Hörmətli ${guest.name}, ${hotelName} otelində #${resCode} nömrəli rezervasiyanız üzrə ₼${amount.toFixed(2)} məbləğində ödənişiniz qəbul edildi.\n` +
+                        `💳 Hesab: ${data.accountId || 'Kassa'}\n` +
+                        `📅 Tarix: ${data.date} ${data.time}\n` +
+                        `Təşəkkür edirik!`;
+                    window.sendWhatsAppNotification?.(guest.phone, msg);
+                } catch (waErr) {
+                    console.warn('WhatsApp payment receipt error:', waErr);
+                }
+            }
+
             window.notificationManager?.showNotification('success', 'Ödəniş Qəbul Edildi', `₼${amount.toFixed(2)} məbləğində ödəniş uğurla qeydə alındı.`);
             window.modalManager.hideModal();
             
@@ -406,6 +443,37 @@ export default class PaymentForm {
                 // ADDED: Pass the current logged-in user's UID as staffId
                 staffId: window.authManager?.getCurrentUser()?.uid || null 
             });
+
+            // WhatsApp Notification for POS sale
+            const notifyWhatsApp = form.querySelector('[name="notifyWhatsApp"]')?.checked;
+            if (notifyWhatsApp) {
+                try {
+                    let targetGuest = null;
+                    let roomNumber = '';
+                    if (reservationId) {
+                        const res = window.app.data.reservations.find(r => r.id === reservationId);
+                        targetGuest = window.app.data.guests.find(g => g.id === res?.guestId);
+                        const rm = window.app.data.rooms.find(r => r.id === res?.roomId);
+                        roomNumber = rm ? rm.number : '';
+                    } else if (guestId) {
+                        targetGuest = window.app.data.guests.find(g => g.id === guestId);
+                    }
+
+                    if (targetGuest && targetGuest.phone) {
+                        const hotelInfo = window.app.getHotelInfo();
+                        const hotelName = hotelInfo?.hotelName || 'Otel';
+                        const itemsSummary = cart.map(i => `${i.name} (${i.quantity} ədəd)`).join(', ');
+                        const isAccount = paymentType === 'account';
+                        const actionDesc = isAccount ? (roomNumber ? `№${roomNumber} otaq hesabınıza yazıldı` : 'hesabınıza əlavə edildi') : 'ödənişi qeydə alındı';
+                        const msg = `Hörmətli ${targetGuest.name}, ${hotelName} otelində POS satış üzrə ₼${cartTotal.toFixed(2)} məbləğində xərc ${actionDesc}.\n` +
+                            `🛒 Məhsullar: ${itemsSummary}\n` +
+                            `Təşəkkür edirik!`;
+                        window.sendWhatsAppNotification?.(targetGuest.phone, msg);
+                    }
+                } catch (waErr) {
+                    console.warn('WhatsApp POS notification error:', waErr);
+                }
+            }
 
             // Clear POS cart after sale
             window.posComponent.clearCart();

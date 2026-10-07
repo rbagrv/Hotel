@@ -19,7 +19,7 @@ const HotelPMSApp = dynamic(() => import("../components/HotelPMSApp"), {
           <i className="fas fa-hotel"></i>
         </div>
         <div style={{ fontSize: "1.25rem", fontWeight: 700, letterSpacing: "0.5px" }}>
-          LUXURIA HOTEL PMS
+          HOTEL PMS
         </div>
         <div style={{ fontSize: "0.85rem", opacity: 0.75, marginTop: "0.5rem" }}>
           Next.js mühiti başladılır...

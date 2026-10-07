@@ -372,29 +372,56 @@ class HotelPMS {
      */
     updateHotelNameInUI() {
         try {
-            // Defensively get hotel name from settings, fallback to a default.
-            // This prevents errors if called before settings are loaded.
-            const hotelName = this.getSetting('hotelInfo')?.hotelName || 'RB Hotel PMS';
+            // Defensively get hotel name from settings or cache, fallback to a default.
+            let cachedName = null;
+            try { cachedName = localStorage.getItem('cached_hotel_name'); } catch(_) {}
+            const hotelName = this.getSetting('hotelInfo')?.hotelName || cachedName || 'RB Hotel PMS';
+            try { localStorage.setItem('cached_hotel_name', hotelName); } catch(_) {}
             const year = new Date().getFullYear();
 
-            // Update login screen elements if they exist
+            // 1. Document title
+            document.title = `${hotelName} - Otel PMS`;
+
+            // 2. Top Bar Brand Title
+            const ezeeHotelTitle = document.getElementById('ezeeHotelTitle');
+            if (ezeeHotelTitle) ezeeHotelTitle.textContent = hotelName;
+
+            // 3. Sidebar Brand Labels
+            document.querySelectorAll('.luxuria-hotel-label').forEach(el => {
+                el.textContent = hotelName;
+            });
+            const sidebarHotelName = document.getElementById('sidebarHotelName');
+            if (sidebarHotelName) sidebarHotelName.textContent = hotelName;
+
+            // 4. Splash Screen Hotel Name
+            const splashHotelName = document.getElementById('splashHotelName');
+            if (splashHotelName) splashHotelName.textContent = hotelName;
+            document.querySelectorAll('.splash-title span').forEach(el => {
+                el.textContent = hotelName;
+            });
+
+            // 5. Login screen elements
             const loginHotelName = document.getElementById('loginHotelName');
             if (loginHotelName) loginHotelName.textContent = hotelName;
 
             const loginCopyright = document.getElementById('loginCopyright');
-            if (loginCopyright) loginCopyright.textContent = `© ${year} ${hotelName}. Bütün hüququqlar qorunur.`;
+            if (loginCopyright) loginCopyright.textContent = `© ${year} ${hotelName}. Bütün hüquqlar qorunur.`;
 
-            // Update pending approval screen elements if they exist
+            // 6. Pending approval screen elements
             const pendingHotelName = document.getElementById('pendingApprovalScreen_HotelName');
             if (pendingHotelName) pendingHotelName.textContent = hotelName;
 
-            // Update main app sidebar element if it exists
-            const sidebarHotelName = document.getElementById('sidebarHotelName');
-            if (sidebarHotelName) sidebarHotelName.textContent = hotelName;
+            // 7. Footer Version Text
+            const footerAppVersion = document.getElementById('footerAppVersionText');
+            if (footerAppVersion) {
+                footerAppVersion.innerHTML = `${hotelName} &middot; Otel PMS | Versiya: 15.2.2`;
+            }
+
+            // 8. Dispatch event for any other subscribers
+            window.dispatchEvent(new CustomEvent('hotelname-changed', { detail: { hotelName } }));
 
         } catch (error) {
             console.error('Error in updateHotelNameInUI:', error);
-            // Record the error without crashing the app
             if (this.recordSystemError && typeof this.recordSystemError === 'function') {
                 this.recordSystemError('UIUpdateError', error.message, error.stack);
             }
@@ -1234,6 +1261,21 @@ class HotelPMS {
                     return;
                 }
                 updatedData.cancellationReason = reason || 'Səbəb göstərilməyib';
+
+                // Send WhatsApp cancellation notification to guest
+                try {
+                    const guest = this.data.guests.find(g => g.id === reservation.guestId);
+                    if (guest && guest.phone) {
+                        const hotelInfo = this.getHotelInfo();
+                        const hotelName = hotelInfo?.hotelName || 'Otel';
+                        const cancelMsg = `Hörmətli ${guest.name}, ${hotelName} otelində #${reservation.publicId || reservation.id} nömrəli rezervasiyanız ləğv edildi.\n` +
+                            `Səbəb: ${updatedData.cancellationReason}\n` +
+                            `Əlavə suallarınız üçün bizimlə əlaqə saxlaya bilərsiniz: ${hotelInfo?.phone || ''}`;
+                        window.sendWhatsAppNotification?.(guest.phone, cancelMsg);
+                    }
+                } catch (waErr) {
+                    console.warn('Could not send WhatsApp cancellation notification:', waErr);
+                }
             }
 
             await this.updateReservation(reservationId, updatedData);

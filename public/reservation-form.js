@@ -251,6 +251,16 @@ class ReservationForm {
                         <div id="servicesBreakdown" style="display: none;"></div>
                     </div>
                 </div>
+
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 0.5rem; padding: 0.75rem 1rem; background: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.35); border-radius: 8px;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; margin: 0; font-weight: 600; color: #065f46;">
+                        <input type="checkbox" name="notifyWhatsApp" id="resNotifyWhatsApp" checked style="width: 1.15rem; height: 1.15rem; accent-color: #25D366;">
+                        <span><i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.2rem;"></i> Müştəriyə WhatsApp ilə bildiriş və təsdiq göndər</span>
+                    </label>
+                    <small style="display: block; margin-top: 0.25rem; margin-left: 1.9rem; color: #475569;">
+                        Rezervasiya qeydə alınan kimi qonağın telefon nömrəsinə otaq və qonaqlama təfərrüatları göndəriləcək.
+                    </small>
+                </div>
             </form>
         `;
     }
@@ -723,6 +733,32 @@ class ReservationForm {
                             window.notificationManager?.showNotification('warning', 'Kassa xətası', 'Rezervasiya yaradıldı, amma avtomatik ödəniş mədaxili yaradılmadı.');
                         }
                     }
+                }
+            }
+
+            // WhatsApp Notification Trigger
+            const notifyWhatsApp = form.querySelector('[name="notifyWhatsApp"]')?.checked;
+            if (notifyWhatsApp && createdReservation) {
+                try {
+                    const guest = window.app.data.guests.find(g => g.id === (data.guestId || createdReservation.guestId));
+                    const room = window.app.data.rooms.find(r => r.id === (data.roomId || createdReservation.roomId));
+                    const hotelInfo = window.app.getHotelInfo();
+                    const hotelName = hotelInfo?.hotelName || 'Otel';
+                    const guestPhone = guest?.phone;
+                    if (guestPhone) {
+                        const actionText = reservationId ? 'yeniləndi' : 'təsdiqləndi';
+                        const resCode = createdReservation.publicId || (window.app ? window.app.formatInternalId(createdReservation.id, 'RZ') : createdReservation.id);
+                        const msg = `Hörmətli ${guest.name}, ${hotelName} otelində #${resCode} nömrəli rezervasiyanız ${actionText}!\n` +
+                            `🏨 Otaq: №${room?.number || ''} (${room?.type || ''})\n` +
+                            `📅 Giriş: ${data.checkIn}\n` +
+                            `📅 Çıxış: ${data.checkOut}\n` +
+                            `👥 Qonaq: ${data.adults || 1} böyük${data.children ? `, ${data.children} uşaq` : ''}\n` +
+                            `💰 Ümumi Məbləğ: ${data.totalAmount} AZN\n` +
+                            `Bizi seçdiyiniz üçün təşəkkür edirik!`;
+                        window.sendWhatsAppNotification?.(guestPhone, msg);
+                    }
+                } catch (waErr) {
+                    console.warn('WhatsApp reservation notification error:', waErr);
                 }
             }
 

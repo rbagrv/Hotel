@@ -1,4 +1,26 @@
 
+// Immediate universal hotel branding synchronization from cache
+try {
+  const cachedHotelName = localStorage.getItem('cached_hotel_name');
+  if (cachedHotelName) {
+    document.title = `${cachedHotelName} - Otel PMS`;
+    const applyCachedName = () => {
+      const ezeeTitle = document.getElementById('ezeeHotelTitle');
+      if (ezeeTitle) ezeeTitle.textContent = cachedHotelName;
+      document.querySelectorAll('.luxuria-hotel-label').forEach(el => el.textContent = cachedHotelName);
+      const splashTitle = document.getElementById('splashHotelName');
+      if (splashTitle) splashTitle.textContent = cachedHotelName;
+      const loginTitle = document.getElementById('loginHotelName');
+      if (loginTitle) loginTitle.textContent = cachedHotelName;
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyCachedName);
+    } else {
+      applyCachedName();
+    }
+  }
+} catch (_) {}
+
 function onReady(fn) {
   if (document.readyState === "interactive" || document.readyState === "complete") {
     setTimeout(fn, 10);

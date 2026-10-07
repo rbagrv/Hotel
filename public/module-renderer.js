@@ -336,6 +336,7 @@ class ModuleRenderer {
                     <li><button class="settings-menu-btn${section === 'system' ? ' active' : ''}" onclick="window.moduleRenderer.selectSettingsSection('system')"><i class="fas fa-cogs"></i> Sistem</button></li>
                     <li><button class="settings-menu-btn${section === 'business' ? ' active' : ''}" onclick="window.moduleRenderer.selectSettingsSection('business')"><i class="fas fa-briefcase"></i> Biznes/Otel</button></li>
                     <li><button class="settings-menu-btn${section === 'categories' ? ' active' : ''}" onclick="window.moduleRenderer.selectSettingsSection('categories')"><i class="fas fa-tags"></i> Kateqoriyalar</button></li>
+                    <li><button class="settings-menu-btn${section === 'integrations' ? ' active' : ''}" onclick="window.moduleRenderer.selectSettingsSection('integrations')"><i class="fas fa-plug"></i> İnteqrasiyalar</button></li>
                 </ul>
             </nav>
         `;
@@ -363,7 +364,8 @@ class ModuleRenderer {
       system: 'Sistem Parametrləri',
       business: 'Biznes/Otel Məlumatları',
       users: 'İstifadəçilər və İcazələr',
-      categories: 'Kateqoriyaların İdarə Edilməsi'
+      categories: 'Kateqoriyaların İdarə Edilməsi',
+      integrations: 'İnteqrasiyalar və Bildiriş Sistemləri'
     };
     return map[sec] || 'Tənzimləmələr';
   }
@@ -378,6 +380,7 @@ class ModuleRenderer {
     if (section === 'business') return this.renderBusinessSettings(data);
     if (section === 'users') return this.renderUserSettings(data);
     if (section === 'categories') return this.renderCategoriesSettings(data);
+    if (section === 'integrations') return this.renderSuperadminIntegrations(data);
 
     return `<div style="padding:2rem;">Modul tapılmadı.</div>`;
   }
@@ -1528,8 +1531,33 @@ ${error.stack || 'No stack trace available.'}
 
     return `
         <div class="report-section">
-            <h4>Telegram İnteqrasiyası</h4>
+            <h4>WhatsApp və Telegram Bildiriş İnteqrasiyaları</h4>
             <div class="report-grid">
+                <!-- WhatsApp Integration Card -->
+                <div class="operational-card" style="border: 1px solid rgba(37, 211, 102, 0.4); background: linear-gradient(135deg, rgba(37, 211, 102, 0.05) 0%, rgba(255, 255, 255, 1) 100%);">
+                    <div class="card-header">
+                        <h5 class="card-title">WhatsApp Mikroservis & Bildirişlər</h5>
+                        <i class="fab fa-whatsapp card-icon" style="background-color: #25D366; color: white;"></i>
+                    </div>
+                    <p>Rezervasiya qeydiyyatı, ləğv edilməsi, ödəniş qəbzləri və POS otaq xərclərinin müştəriyə WhatsApp ilə avtomatik çatdırılması.</p>
+                    <p style="margin-top:0.5em; font-size:0.9em; color:var(--text-light);">
+                        Status: <span style="color: #059669; font-weight: 600;"><i class="fas fa-check-circle"></i> Qoşulmağa Hazırdır</span> | 
+                        Port: <b>3001</b> / <b>Web Link Fallback</b>
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1em;">
+                        <button class="btn btn-primary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('qr')">
+                            <i class="fas fa-qrcode"></i> QR Kod ilə Qoşul
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('status')">
+                            <i class="fas fa-info-circle"></i> Server Statusu
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('send')">
+                            <i class="fas fa-paper-plane"></i> Test Göndər
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Telegram Integration Card -->
                 <div class="operational-card">
                     <div class="card-header">
                         <h5 class="card-title">Telegram Bildirişləri</h5>

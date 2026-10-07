@@ -62,10 +62,57 @@ export default function ModernWidgets() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // 3. Inject modern header controls into the top bar
+  // Expose global helpers for WhatsApp
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Calculate live room occupancy
+    window.openWhatsAppModal = (tab = "send") => {
+      setWaModalOpen(true);
+      setWaTab(tab);
+      if (tab === "qr") fetchWhatsAppQr();
+      if (tab === "status") fetchWhatsAppStatus();
+    };
+
+    window.sendWhatsAppNotification = async (phone, message) => {
+      try {
+        const res = await fetch("/api/whatsapp/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, message }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (data.provider === "wa_direct_link" && data.waLink) {
+            window.open(data.waLink, "_blank");
+            window.notificationManager?.showNotification(
+              "info",
+              "WhatsApp Açıldı",
+              `${phone} nömrəsinə bildiriş göndərmək üçün WhatsApp pəncərəsi açıldı.`,
+              4000
+            );
+          } else {
+            window.notificationManager?.showNotification(
+              "success",
+              "WhatsApp Bildirişi",
+              `${phone} nömrəsinə mesaj çatdırıldı.`,
+              4000
+            );
+          }
+          return data;
+        } else {
+          console.warn("WhatsApp notification error:", data.error);
+        }
+      } catch (err) {
+        console.error("WhatsApp notification network error:", err);
+      }
+    };
+
+    return () => {
+      delete window.openWhatsAppModal;
+    };
+  }, []);
+
+  // 3. Inject modern header controls into the top bar (WhatsApp moved to Integrations)
+  useEffect(() => {
+    const updateOccupancy = () => {
       if (window.app?.data?.rooms) {
         const total = window.app.data.rooms.length;
         const occupied = (window.app.data.reservations || []).filter(
@@ -74,23 +121,17 @@ export default function ModernWidgets() {
         const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
         setOccupancy({ total, occupied, percent: pct });
       }
+    };
 
-      // Inject top bar buttons if not already present
+    updateOccupancy();
+    window.addEventListener("app-data-updated", updateOccupancy);
+
+    const injectTopControls = () => {
       const topRight = document.querySelector(".luxuria-top-right");
       if (topRight && !document.getElementById("next-modern-controls")) {
         const container = document.createElement("div");
         container.id = "next-modern-controls";
         container.style = "display: flex; align-items: center; gap: 0.5rem;";
-
-        // WhatsApp Button
-        const waBtn = document.createElement("button");
-        waBtn.className = "whatsapp-topbar-btn";
-        waBtn.title = "WhatsApp Mikroservisi və Bildirişlər";
-        waBtn.innerHTML = '<i class="fab fa-whatsapp"></i> <span>WhatsApp</span>';
-        waBtn.onclick = () => {
-          setWaModalOpen(true);
-          fetchWhatsAppStatus();
-        };
 
         // Theme Toggle Button
         const themeBtn = document.createElement("button");
@@ -107,15 +148,20 @@ export default function ModernWidgets() {
         cmdBtn.innerHTML = '<i class="fas fa-terminal"></i>';
         cmdBtn.onclick = () => setCmdOpen(true);
 
-        container.appendChild(waBtn);
         container.appendChild(cmdBtn);
         container.appendChild(themeBtn);
 
         topRight.insertBefore(container, topRight.firstChild);
       }
-    }, 1000);
+    };
 
-    return () => clearInterval(interval);
+    injectTopControls();
+    const timer = setTimeout(injectTopControls, 1000);
+
+    return () => {
+      window.removeEventListener("app-data-updated", updateOccupancy);
+      clearTimeout(timer);
+    };
   }, [theme]);
 
   // Update theme toggle icon when theme changes

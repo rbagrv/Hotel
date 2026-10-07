@@ -383,3 +383,10 @@
     background: #334155;
     color: #f8fafc;
 }
+
+/* Hide redundant duplicate menu button in header - only #sidebarToggleBtn is used */
+#mobileMenuBtn,
+.mobile-menu-btn {
+    display: none !important;
+}
+
