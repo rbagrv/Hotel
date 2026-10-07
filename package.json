@@ -1,0 +1,101 @@
+{
+  "name": "hotel-pms-electron",
+  "version": "15.2.2",
+  "description": "Hotel Property Management System - Desktop Application",
+  "main": "main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "electron:start": "electron .",
+    "electron:dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --publish=never",
+    "dist:win": "electron-builder --win nsis",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "hotel",
+    "pms",
+    "management",
+    "electron"
+  ],
+  "author": "Hotel PMS Team",
+  "license": "MIT",
+  "dependencies": {
+    "electron-log": "^5.1.5",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.hotelpms.desktop",
+    "productName": "RB Hotel",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "!dist/**/*",
+      "!.git/**/*"
+    ],
+    "win": {
+      "icon": "assets/appicon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "Hotel PMS Team"
+    },
+    "mac": {
+      "icon": "assets/appicon.icns",
+      "category": "public.app-category.business",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "icon": "assets/appicon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RB Hotel",
+      "installerIcon": "assets/appicon.ico",
+      "uninstallerIcon": "assets/appicon.ico",
+      "installerHeaderIcon": "assets/appicon.ico",
+      "deleteAppDataOnUninstall": true,
+      "runAfterFinish": true
+    },
+    "publish": {
+      "provider": "generic",
+      "url": "https://example.com/updates/",
+      "updaterCacheDirName": "rb-hotel-updater"
+    }
+  }
+}

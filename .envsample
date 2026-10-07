@@ -1,0 +1,42 @@
+# RB Hotel PMS - Environment Sample
+#
+# DO NOT store real production credentials/secrets in this file!
+# Only public, non-critical, or placeholder values should be committed to version control.
+# The real .env file (if used) must be manually created and kept OUT of git for security.
+
+# <---- SECURITY NOTICE ---->
+# DİQQƏT: Bu faylda REAL və gizli tokən, şifrə, API açarı yazmaq YOL VERİLMƏZ!
+# Yalnız nümunə (dummy) və ya "placeholder" dəyərlər olsun.
+# Git və ya xarici qovluğa actual / real .env yerləşdirməyin.
+# -----------------------------------
+
+# Auto-updater configuration  
+UPDATE_URL=https://example.com/updates/   # Example path, replace in production
+UPDATE_CHECK_INTERVAL=3600000             # Check every hour (ms)
+
+# Telegram Bot keys - DO NOT PUT REAL TOKENS HERE!
+TELEGRAM_BOT_TOKEN=7849692173:AAGc9EvrywMa6hOcYh7EvqTaNqOEXW4G_Gk
+TELEGRAM_CHAT_ID=734378254
+
+# Firebase konfigurasiya açarları
+FIREBASE_API_KEY=AIzaSyD-jdQPgIQOjRlaHlSkrxf-hkiJu6-kySk
+FIREBASE_AUTH_DOMAIN=hotelpms-d0871.firebaseapp.com
+FIREBASE_DATABASE_URL=https://hotelpms-d0871-default-rtdb.firebaseio.com
+FIREBASE_PROJECT_ID=hotelpms-d0871
+FIREBASE_STORAGE_BUCKET=hotelpms-d0871.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=118813173579
+FIREBASE_APP_ID=1:118813173579:web:c36b32052a58a4d7c86ace
+FIREBASE_MEASUREMENT_ID= # Optional: Add your Google Analytics Measurement ID here for telemetry
+
+# NEW: Sunmi Tax Device API URL
+SUNMI_API_URL=http://192.168.1.100:8000/api/sunmi # Example: Replace with your Sunmi device's IP address and port
+
+# Database/API configuration samples - replace with correct keys locally, never commit real keys!
+SUPABASE_URL=sample
+SUPABASE_ANON_KEY=sample
+
+# <-------->
+# For real deployment: Copy this file to .env (do not commit .env to git), and fill actual secrets on the server/your PC.
+# The application will read variables from .env or the host environment.
+
+# NEVER COMMIT REAL PRODUCTION SECRETS!

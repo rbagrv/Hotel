@@ -1,0 +1,102 @@
+{
+  "name": "RB Hotel PMS",
+  "description": "Otel İdarəetmə Sistemi - Rezervasiya, Qonaq, Otaq, Kassa və Anbar idarəetməsi. Server: Firebase, Lokal: Offline dəstəyi (IndexedDB).",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/assets/appicon.png",
+    "32": "/assets/appicon.png",
+    "48": "/assets/appicon.png",
+    "64": "/assets/appicon.png",
+    "128": "/assets/appicon.png",
+    "256": "/assets/appicon.png"
+  },
+  "developer": {
+    "name": "Hotel PMS Team",
+    "url": "mailto:info@otelpms.az"
+  },
+  "default_locale": "az",
+  "orientation": [
+    "portrait",
+    "landscape"
+  ],
+  "fullscreen": "true",
+  "cozy": {
+    "categories": [
+      "productivity",
+      "business"
+    ],
+    "permissions": {
+      "files": {
+        "type": "io.cozy.files",
+        "verbs": ["GET", "POST", "PUT"]
+      },
+      "guests": {
+        "type": "io.cozy.pms.guests",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "rooms": {
+        "type": "io.cozy.pms.rooms",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "reservations": {
+        "type": "io.cozy.pms.reservations",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "services": {
+        "type": "io.cozy.pms.services",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "inventory": {
+        "type": "io.cozy.pms.inventory",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "staff": {
+        "type": "io.cozy.pms.staff",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "maintenance": {
+        "type": "io.cozy.pms.maintenance",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "cash_transactions": {
+        "type": "io.cozy.pms.cash_transactions",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "invoices": {
+        "type": "io.cozy.pms.invoices",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "pos_sales": {
+        "type": "io.cozy.pms.pos_sales",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "reports": {
+        "type": "io.cozy.pms.reports",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "settings": {
+        "type": "io.cozy.pms.settings",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "audit_logs": {
+        "type": "io.cozy.pms.audit_logs",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "purchase_documents": {
+        "type": "io.cozy.pms.purchase_documents",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      },
+      "system_errors": {
+        "type": "io.cozy.pms.system_errors",
+        "verbs": ["GET", "PUT", "POST", "DELETE"]
+      }
+    },
+    "databases": [
+      {
+        "type": "firebase",
+        "configurable": true,
+        "offline_supported": true
+      }
+    ]
+  }
+}

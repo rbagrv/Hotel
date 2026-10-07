@@ -1,0 +1,212 @@
+{
+  "database": {
+    "schema": {
+      "guests": {
+        "id": { "type": "string", "description": "Guest document ID (Firestore string ID)" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. QN-00001)" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "passportNo": { "type": "string" },
+        "nationality": { "type": "string" },
+        "address": { "type": "string" },
+        "birthDate": { "type": "string" },
+        "gender": { "type": "string" },
+        "documentUrl": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string", "description": "ID of the staff member who created the guest record" }
+      },
+      "rooms": {
+        "id": { "type": "string", "description": "Room document ID" },
+        "number": { "type": "string" },
+        "type": "string",
+        "category": { "type": "string" },
+        "capacity": { "type": "number" },
+        "price": { "type": "number" },
+        "building": { "type": "string" },
+        "floor": { "type": "number" },
+        "status": { "type": "string" },
+        "amenities": { "type": "array" }
+      },
+      "reservations": {
+        "id": { "type": "string", "description": "Reservation document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. RZ-00001)" },
+        "guestId": { "type": "string" },
+        "roomId": { "type": "string" },
+        "checkIn": { "type": "string" },
+        "checkOut": { "type": "string" },
+        "adults": { "type": "number" },
+        "children": { "type": "number" },
+        "status": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "nights": { "type": "number" },
+        "roomTotal": { "type": "number" },
+        "servicesTotal": { "type": "number" },
+        "selectedServices": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string", "description": "ID of the staff member who created the reservation" },
+        "cancellationReason": { "type": "string" },
+        "discountValue": { "type": "number" },
+        "discountType": { "type": "string" },
+        "externalReference": { "type": "string", "description": "External reservation number (e.g. Booking.com)" },
+        "source": { "type": "string", "description": "Source of the reservation (e.g., 'system', 'online')" },
+        "commissionAmount": { "type": "number", "description": "Commission paid for this reservation (e.g., to Booking.com)" }
+      },
+      "services": {
+        "id": { "type": "string", "description": "Service document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. XD-00001)" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "inventory": {
+        "id": { "type": "string", "description": "Inventory document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. AN-00001)" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "quantity": { "type": "number" },
+        "minQuantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "purchasePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "description": "Timestamp when the inventory item was created" },
+        "createdBy": { "type": "string", "description": "ID of the staff member who created the inventory item" }
+      },
+      "staff": {
+        "id": { "type": "string", "description": "Staff document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. IS-00001)" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "telegramId": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "salary": { "type": "number" },
+        "startDate": { "type": "string" },
+        "status": { "type": "string" },
+        "role": { "type": "string" },
+        "permissions": { "type": "object", "description": "Custom permissions" },
+        "createdAt": { "type": "string" }
+      },
+      "maintenance": {
+        "id": { "type": "string", "description": "Maintenance Task ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. TM-00001)" },
+        "roomId": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "priority": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string", "description": "ID of the staff member who created the maintenance task" }
+      },
+      "cash_transactions": {
+        "id": { "type": "string", "description": "Cash Transaction document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. KS-00001)" },
+        "type": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "staffId": { "type": "string" },
+        "reservationId": { "type": "string" },
+        "salaryRecipientId": { "type": "string" },
+        "purchaseDocumentId": { "type": "string" },
+        "posSaleId": { "type": "string" },
+        "accountId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "invoices": {
+        "id": { "type": "string", "description": "Invoice document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. FQ-00001)" },
+        "reservationId": { "type": "string" },
+        "guestName": { "type": "string" },
+        "roomNumber": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string", "description": "ID of the staff member who created the invoice" }
+      },
+      "pos_sales": {
+        "id": { "type": "string" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. PS-00001)" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "paymentType": { "type": "string" },
+        "reservationId": { "type": "string" },
+        "staffId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "reports": {
+        "id": { "type": "string" },
+        "reportType": { "type": "string" },
+        "title": { "type": "string" },
+        "dateFrom": { "type": "string" },
+        "dateTo": { "type": "string" },
+        "data": { "type": "object" },
+        "generatedBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "settings": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "key": { "type": "string" },
+        "value": { "type": "object" },
+        "description": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "audit_logs": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "changes": { "type": "object" },
+        "performedBy": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "deviceInfo": {"type": "object", "description": "Client device information (OS, browser)"},
+        "loginIp": {"type": "string", "description": "Client IP address (often a placeholder for security/privacy reasons)"}
+      },
+      "purchase_documents": {
+        "id": { "type": "string", "description": "Purchase Document document ID" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. AS-00001)" },
+        "documentNumber": { "type": "string" },
+        "supplierName": { "type": "string" },
+        "purchaseDate": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "items": { "type": "array", "description": "Array of purchased items" },
+        "documentUrl": { "type": "string" },
+        "staffId": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "system_errors": {
+        "id": { "type": "string" },
+        "publicId": { "type": "string", "description": "Human-readable public ID (e.g. SR-00001)" },
+        "timestamp": { "type": "string" },
+        "message": { "type": "string" },
+        "filename": { "type": "string" },
+        "lineno": { "type": "number" },
+        "colno": { "type": "number" },
+        "errorType": { "type": "string" },
+        "stack": { "type": "string" },
+        "resolved": { "type": "boolean" },
+        "resolvedBy": { "type": "string" },
+        "resolvedAt": { "type": "string" }
+      }
+    },
+    "instructions": "Bu struktur Firestore NoSQL üçün tam uyğundur. Bütün kolleksiyalar sənəd əsaslıdır (id - string). Tarixlər string olaraq (YYYY-MM-DD və ya ISO formatda) saxlanır. Array, object və number kimi data tipləri dəstəklənir. İstədiyiniz sahəni əlavə edə və ya silə bilərsiniz.",
+    "hooks": {
+      "onLoad": [
+        "window.app.loadAllData()"
+      ],
+      "onError": [
+        "window.notificationManager?.showNotification('error', 'Baza xətası', 'Məlumatların yüklənməsində xəta.')"
+      ]
+    }
+  }
+}

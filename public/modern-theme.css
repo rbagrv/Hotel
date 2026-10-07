@@ -1,0 +1,1453 @@
+/* ==========================================================================
+   LUXURIA ANGULAR 19+ MATERIAL DESIGN THEME FOR RB HOTEL PMS
+   ========================================================================== */
+
+:root {
+    /* Luxuria Material 3 Palette */
+    --mat-primary: #005cbb;            /* Luxuria M3 Signature Blue */
+    --mat-primary-hover: #004b9b;
+    --mat-primary-container: #d7e3ff;  /* Soft active container */
+    --mat-on-primary-container: #001b3f;
+    --primary-color: #005cbb;
+    --primary-hover: #004b9b;
+    --primary-light: #e8f0fe;
+    --primary-gradient: linear-gradient(135deg, #005cbb 0%, #0077e6 100%);
+    
+    --mat-secondary: #565f71;
+    --secondary-color: #565f71;
+    --success-color: #1b873f;          /* Clean M3 Green */
+    --success-light: #e6f6ec;
+    --warning-color: #e67e22;          /* M3 Warm Amber */
+    --warning-light: #fef5ea;
+    --danger-color: #ba1a1a;           /* M3 Deep Red */
+    --danger-light: #ffdad6;
+    --info-color: #006874;             /* M3 Deep Cyan */
+    --info-light: #e0f7fa;
+
+    /* Backgrounds & Surfaces (Luxuria Light Theme) */
+    --mat-surface: #faf9fd;
+    --mat-surface-container: #f0f3f9;
+    --background-color: #f4f6fa;
+    --content-bg: #f8fafc;
+    --card-bg: #ffffff;
+    
+    /* Luxuria Sidebar Theme (M3 Dark Navy or Crisp Contrast) */
+    --sidebar-bg: #1a202e;             /* Luxuria Deep Slate Navy */
+    --sidebar-text: #94a3b8;
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: #283347;
+    --sidebar-active-accent: #005cbb;
+    --sidebar-border: rgba(255, 255, 255, 0.07);
+    
+    /* Top Bar Theme */
+    --header-bg: #ffffff;
+    --text-color: #1a1c1e;
+    --text-light: #44474f;
+    --border-color: #e1e3e8;
+    --border-color-light: #f0f2f5;
+
+    /* Material Design Shadows & Radii */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* Base Font: Roboto */
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+[data-theme="dark"] {
+    --mat-primary: #a8c8ff;
+    --mat-primary-hover: #80afff;
+    --mat-primary-container: #00458e;
+    --mat-on-primary-container: #d7e3ff;
+    --primary-color: #a8c8ff;
+    --primary-hover: #80afff;
+    --primary-light: rgba(168, 200, 255, 0.12);
+    --primary-gradient: linear-gradient(135deg, #00458e 0%, #005cbb 100%);
+    --background-color: #111418;
+    --content-bg: #191c20;
+    --card-bg: #1e2228;
+    --sidebar-bg: #111418;
+    --sidebar-text: #94a3b8;
+    --sidebar-text-hover: #e2e8f0;
+    --sidebar-active-bg: #1e2532;
+    --sidebar-active-accent: #a8c8ff;
+    --header-bg: #191c20;
+    --text-color: #e2e2e6;
+    --text-light: #c4c6d0;
+    --border-color: #2e333b;
+    --border-color-light: #242830;
+}
+
+/* ==========================================================================
+   LUXURIA DUAL-RING ROTATING SPLASH SCREEN
+   ========================================================================== */
+.splash-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 38%, #1e2738 0%, #111622 100%) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    color: #ffffff;
+    opacity: 1;
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    max-width: 440px;
+    width: 90%;
+    animation: luxuriaFadeIn 0.6s ease-out;
+}
+
+@keyframes luxuriaFadeIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Dual-ring spinner matching Luxuria template */
+.loader-spinner {
+    width: 58px;
+    height: 58px;
+    border: 4px solid rgba(255, 255, 255, 0.12);
+    border-top: 4px solid #005cbb;
+    border-right: 4px solid #38bdf8;
+    border-radius: 50%;
+    animation: luxuriaSpin 0.9s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+    box-shadow: 0 0 20px rgba(0, 92, 187, 0.35);
+}
+
+@keyframes luxuriaSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.splash-brand-badge {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.9rem 1.6rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+}
+
+.splash-brand-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 92, 187, 0.45);
+}
+
+.splash-brand-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.splash-brand-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+}
+
+.splash-brand-sub {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #80afff;
+    letter-spacing: 0.16em;
+}
+
+.splash-status-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.splash-message {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    font-weight: 400;
+    margin: 0;
+}
+
+.splash-progress-container {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    display: block !important;
+}
+
+.splash-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #005cbb, #38bdf8, #22c55e);
+    border-radius: var(--radius-full);
+    transition: width 0.35s ease;
+}
+
+.splash-progress-text {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 600;
+    display: block !important;
+}
+
+.splash-footer-badge {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ==========================================================================
+   LUXURIA TOP APP BAR (MATERIAL DESIGN 3)
+   ========================================================================== */
+.luxuria-top-bar {
+    height: 64px;
+    min-height: 64px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.luxuria-top-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.luxuria-menu-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.luxuria-menu-toggle-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.luxuria-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.luxuria-brand-icon {
+    font-size: 24px;
+    color: var(--mat-primary);
+}
+
+.luxuria-hotel-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.01em;
+}
+
+.luxuria-top-search-wrap {
+    flex: 0 1 440px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: #f1f3f9;
+    border-radius: var(--radius-full);
+    padding: 0 1rem;
+    height: 40px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+[data-theme="dark"] .luxuria-top-search-wrap {
+    background: #242933;
+}
+
+.luxuria-top-search-wrap:focus-within {
+    background: #ffffff;
+    box-shadow: 0 0 0 2px var(--mat-primary-container), 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.luxuria-search-icon {
+    font-size: 20px;
+    color: #64748b;
+    margin-right: 0.5rem;
+}
+
+.luxuria-top-search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    font-family: inherit;
+}
+
+.luxuria-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.luxuria-top-btn {
+    background: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    position: relative;
+}
+
+[data-theme="dark"] .luxuria-top-btn {
+    color: #cbd5e1;
+}
+
+.luxuria-top-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.luxuria-top-btn .material-icons-outlined,
+.luxuria-top-btn .material-icons {
+    font-size: 22px;
+}
+
+.luxuria-logout-btn:hover {
+    background: var(--danger-light);
+    color: var(--danger-color);
+}
+
+.luxuria-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f3f9;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.85rem 0.3rem 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+[data-theme="dark"] .luxuria-user-btn {
+    background: #242933;
+}
+
+.luxuria-user-btn:hover {
+    background: var(--mat-primary-container);
+    color: var(--mat-on-primary-container);
+}
+
+.luxuria-user-btn .material-icons-outlined {
+    font-size: 22px;
+    color: var(--mat-primary);
+}
+
+/* ==========================================================================
+   LUXURIA MATERIAL SIDEBAR
+   ========================================================================== */
+.luxuria-sidebar {
+    background-color: var(--sidebar-bg) !important;
+    width: 255px !important;
+    min-width: 255px !important;
+    border-right: 1px solid var(--sidebar-border) !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.luxuria-sidebar-user {
+    padding: 1.25rem 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    border-bottom: 1px solid var(--sidebar-border);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.luxuria-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 92, 187, 0.3);
+}
+
+.luxuria-user-avatar .material-icons {
+    font-size: 22px;
+}
+
+.luxuria-user-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.luxuria-hotel-label {
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.luxuria-role-label {
+    color: #80afff;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sidebar-nav {
+    padding: 0.75rem 0.65rem !important;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.nav-section-title {
+    padding: 1rem 0.85rem 0.4rem 0.85rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.65rem 0.95rem !important;
+    color: var(--sidebar-text) !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    border-radius: var(--radius-md) !important;
+    transition: all 0.15s ease !important;
+    border-left: none !important;
+    margin: 0 !important;
+}
+
+.sidebar-nav li a:hover {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    color: var(--sidebar-text-hover) !important;
+    transform: none !important;
+}
+
+.sidebar-nav li a.active {
+    background: var(--mat-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(0, 92, 187, 0.35) !important;
+}
+
+.sidebar-nav li a .material-icons-outlined,
+.sidebar-nav li a .material-icons,
+.sidebar-nav li a i {
+    font-size: 18px !important;
+    width: 20px;
+    text-align: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+}
+
+.sidebar-nav li a:hover .material-icons-outlined,
+.sidebar-nav li a:hover .material-icons,
+.sidebar-nav li a:hover i {
+    color: #ffffff !important;
+}
+
+.sidebar-nav li a.active .material-icons-outlined,
+.sidebar-nav li a.active .material-icons,
+.sidebar-nav li a.active i {
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   LUXURIA MATERIAL DESIGN PAGE HEADER & LIVE CLOCK
+   ========================================================================== */
+.header {
+    background: var(--header-bg) !important;
+    height: 56px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 0 1.5rem !important;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+.header-clock-widget {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 1.25rem;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.85rem;
+}
+
+[data-theme="dark"] .header-clock-widget {
+    background: #1e2228;
+}
+
+.top-clock-box {
+    display: flex;
+    align-items: center;
+    font-family: 'Roboto', monospace, sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.top-clock-colon {
+    animation: colonBlink 1s infinite ease-in-out;
+    margin: 0 1px;
+    color: var(--mat-primary);
+}
+
+@keyframes colonBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.top-date-box {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--mat-primary);
+    background: var(--mat-primary-container);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+   LUXURIA MATERIAL 3 CARDS & METRIC WIDGETS
+   ========================================================================== */
+.stat-card, .operational-card, .card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    padding: 1.25rem 1.4rem !important;
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover, .operational-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 92, 187, 0.09) !important;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-2px) !important;
+}
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.65rem;
+}
+
+.stat-card-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #565f71;
+    text-transform: capitalize;
+}
+
+.stat-card-value {
+    font-size: 1.85rem !important;
+    font-weight: 700 !important;
+    color: var(--text-color) !important;
+    letter-spacing: -0.02em;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 0.35rem;
+}
+
+.stat-card-icon, .card-icon {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.15rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ==========================================================================
+   COMPACT & HIGH-DENSITY TABLES (ƏMƏLİYYAT DÜYMƏLƏRİ DAİM GÖRÜNƏN)
+   ========================================================================== */
+.table-container {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-sm) !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-header {
+    padding: 0.85rem 1.15rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: var(--text-color);
+}
+
+/* Compact data table styling */
+.data-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 0.82rem !important;
+}
+
+.data-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    font-size: 0.74rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    padding: 0.55rem 0.65rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    white-space: nowrap !important;
+}
+
+[data-theme="dark"] .data-table th {
+    background: #0f172a !important;
+    color: #94a3b8 !important;
+}
+
+.data-table td {
+    padding: 0.45rem 0.65rem !important;
+    border-bottom: 1px solid var(--border-color-light) !important;
+    color: var(--text-color) !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+}
+
+.data-table tbody tr:hover td {
+    background-color: var(--primary-light) !important;
+}
+
+/* Sticky Action Column & Micro Action Buttons */
+.data-table th:last-child,
+.data-table td:last-child {
+    text-align: right !important;
+    position: sticky !important;
+    right: 0 !important;
+    background: var(--card-bg);
+    box-shadow: -3px 0 6px rgba(0, 0, 0, 0.03);
+    z-index: 5;
+}
+
+.data-table tbody tr:hover td:last-child {
+    background-color: var(--primary-light) !important;
+}
+
+.table-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.25rem !important;
+    flex-wrap: nowrap !important;
+}
+
+.table-actions .btn {
+    padding: 0.3rem 0.45rem !important;
+    font-size: 0.75rem !important;
+    min-width: 26px !important;
+    height: 26px !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.table-actions .btn i {
+    font-size: 0.72rem !important;
+}
+
+/* Filter controls in tables */
+.table-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.table-filters .form-input,
+.table-filters .form-select {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.8rem !important;
+    height: 32px !important;
+}
+
+/* ==========================================================================
+   MODAL WINDOWS & CREATION FORMS
+   ========================================================================== */
+.modal-overlay {
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.modal {
+    border-radius: 10px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-lg) !important;
+    max-height: 92vh !important;
+}
+
+.modal-header {
+    padding: 1rem 1.4rem !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .modal-header {
+    background: #0f172a !important;
+}
+
+.modal-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--text-color) !important;
+}
+
+.modal-body {
+    padding: 1.4rem !important;
+}
+
+.modal-footer {
+    padding: 0.9rem 1.4rem !important;
+    background: #f8fafc !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .modal-footer {
+    background: #0f172a !important;
+}
+
+/* Form inputs & buttons */
+.form-label {
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.3rem !important;
+}
+
+.form-input, .form-select, .form-textarea {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.86rem !important;
+    color: var(--text-color) !important;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2) !important;
+}
+
+.btn {
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    font-size: 0.84rem !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.15s ease !important;
+}
+
+.btn-primary {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover) !important;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS
+   ========================================================================== */
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 1000 !important;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease-in-out !important;
+    }
+
+    .sidebar.show {
+        transform: translateX(0) !important;
+    }
+
+    .mobile-menu-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: #ffffff;
+        color: #1e293b;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: 52px !important;
+        padding: 0 0.85rem !important;
+    }
+
+    .header-clock-widget {
+        display: none !important;
+    }
+
+    .header-breadcrumb {
+        display: none !important;
+    }
+
+    .modal-overlay {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
+
+    .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 14px 14px 0 0 !important;
+        max-height: 94vh !important;
+    }
+
+    .table-actions {
+        position: static !important;
+    }
+
+    .data-table th:last-child,
+    .data-table td:last-child {
+        position: static !important;
+        box-shadow: none !important;
+    }
+}
+
+/* ==========================================================================
+   EZEE FRONTDESK 7.0 TOP APP BAR & STAY VIEW STYLING
+   ========================================================================== */
+
+/* Top Blue Bar */
+.ezee-top-bar {
+    background: #0077b5 !important;
+    background: linear-gradient(180deg, #0288d1 0%, #0277bd 100%) !important;
+    color: #ffffff !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 0.85rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18) !important;
+    z-index: 1001 !important;
+    user-select: none;
+}
+
+.ezee-top-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.ezee-hotel-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff;
+}
+
+.ezee-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #ffffff;
+    color: #0277bd;
+    font-weight: 900;
+    font-size: 0.78rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.ezee-hotel-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.ezee-menu-toggle-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.ezee-menu-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Center Quick Search */
+.ezee-top-search-wrap {
+    position: relative;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 1rem;
+}
+
+.ezee-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0277bd;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.ezee-top-search-input {
+    width: 100%;
+    height: 32px;
+    background: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 4px !important;
+    padding: 0 0.75rem 0 2.2rem !important;
+    font-size: 0.82rem !important;
+    color: #1e293b !important;
+    cursor: pointer;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.ezee-top-search-input::placeholder {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+/* Right Action Buttons */
+.ezee-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ezee-top-btn {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    padding: 0 !important;
+    transition: background 0.15s ease;
+}
+
+.ezee-top-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.ezee-user-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    height: 32px !important;
+    padding: 0 0.65rem !important;
+    border-radius: 4px !important;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ezee-logout-btn:hover {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+}
+
+/* ==========================================================================
+   EZEE STAY VIEW TOOLBAR & KPI STATUS COUNTERS
+   ========================================================================== */
+.ezee-stayview-toolbar {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px 8px 0 0;
+    padding: 0.65rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+[data-theme="dark"] .ezee-stayview-toolbar {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.ezee-stayview-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.ezee-view-selector select,
+.ezee-select-styled {
+    height: 34px;
+    padding: 0 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+.ezee-date-picker-box input,
+.ezee-date-input {
+    height: 34px;
+    padding: 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e293b;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+/* eZee 4 KPI Status Counters (Vacant, Occupied, Reserved, Out of Order) */
+.ezee-kpi-counters {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.ezee-kpi-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .ezee-kpi-item {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.ezee-kpi-item .ezee-kpi-label {
+    color: #64748b;
+    font-size: 0.76rem;
+    text-transform: capitalize;
+}
+
+.ezee-kpi-item .ezee-kpi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+/* Exact eZee colors */
+.ezee-kpi-item.vacant .ezee-kpi-badge {
+    background-color: #e67e22; /* Vacant Orange */
+}
+.ezee-kpi-item.occupied .ezee-kpi-badge {
+    background-color: #1976d2; /* Occupied Blue */
+}
+.ezee-kpi-item.reserved .ezee-kpi-badge {
+    background-color: #388e3c; /* Reserved Green */
+}
+.ezee-kpi-item.outoforder .ezee-kpi-badge {
+    background-color: #d32f2f; /* Out of Order Red */
+}
+
+/* Subbar: Month header + < Today > navigation + filter dropdown */
+.ezee-calendar-subbar {
+    background: #f1f5f9;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+[data-theme="dark"] .ezee-calendar-subbar {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.ezee-month-display h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .ezee-month-display h2 {
+    color: #ffffff;
+}
+
+.ezee-nav-button-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+[data-theme="dark"] .ezee-nav-button-group {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.ezee-nav-btn {
+    background: transparent;
+    border: none;
+    padding: 0.35rem 0.65rem;
+    color: #475569;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.15s;
+}
+
+.ezee-nav-btn:hover {
+    background: #e2e8f0;
+}
+
+.ezee-nav-today-btn {
+    background: #0288d1;
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.ezee-nav-today-btn:hover {
+    background: #0277bd;
+}
+
+.ezee-filter-select {
+    height: 32px;
+    padding: 0 0.65rem;
+    font-size: 0.82rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #1e293b;
+}
+
+/* ==========================================================================
+   EZEE STAY VIEW 14-DAY CALENDAR MATRIX TABLE
+   ========================================================================== */
+.rooms-calendar-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    background: #ffffff;
+}
+
+[data-theme="dark"] .rooms-calendar-table-wrapper {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.rooms-calendar-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.rooms-calendar-table th,
+.rooms-calendar-table td {
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0;
+    height: 38px;
+    min-height: 38px;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .rooms-calendar-table th,
+[data-theme="dark"] .rooms-calendar-table td {
+    border-right-color: #334155;
+    border-bottom-color: #334155;
+}
+
+/* Left Sticky Room Column */
+.rooms-calendar-table .room-info-col {
+    position: sticky !important;
+    left: 0 !important;
+    background: #f8fafc !important;
+    z-index: 10;
+    min-width: 130px !important;
+    max-width: 150px !important;
+    padding: 0.4rem 0.65rem !important;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #1e293b;
+    border-right: 2px solid #cbd5e1 !important;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .rooms-calendar-table .room-info-col {
+    background: #0f172a !important;
+    color: #f8fafc;
+    border-right-color: #475569 !important;
+}
+
+/* Room Header Pill */
+.room-num-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.room-status-indicator-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Date Header Columns */
+.rooms-calendar-table th.date-header-col {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-align: center;
+    min-width: 72px;
+    padding: 0.35rem 0.2rem;
+    line-height: 1.25;
+}
+
+/* Weekend Headers (Fri / Sat) highlighted in bold RED */
+.rooms-calendar-table th.date-header-col.weekend-header {
+    background: #c53929 !important;
+    color: #ffffff !important;
+}
+
+.rooms-calendar-table th.date-header-col.weekend-header small {
+    color: #ffebee !important;
+    font-weight: 600;
+}
+
+/* Weekend Data Column Subtle Tint */
+.rooms-calendar-table td.weekend-cell {
+    background-color: #fef5f5;
+}
+
+[data-theme="dark"] .rooms-calendar-table td.weekend-cell {
+    background-color: rgba(197, 57, 41, 0.1);
+}
+
+/* Today Column Highlight */
+.rooms-calendar-table th.date-header-col.today-col {
+    background: #e1f5fe !important;
+    color: #0288d1 !important;
+    border-left: 2px solid #0288d1 !important;
+    border-right: 2px solid #0288d1 !important;
+}
+
+.rooms-calendar-table td.room-calendar-cell.today-column {
+    background: #f4fbfe;
+    border-left: 2px solid #0288d1 !important;
+    border-right: 2px solid #0288d1 !important;
+}
+
+/* Calendar Cells & Booking Bars */
+.room-calendar-cell {
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    padding: 2px !important;
+}
+
+.room-calendar-cell:hover {
+    background-color: #edf2f7;
+}
+
+/* Stay View Reservation / Status Bars */
+.room-status-badge {
+    width: 100%;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.room-status-badge:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+}
+
+/* Available Vacant cell */
+.room-status-badge.available {
+    background: transparent !important;
+    color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Occupied: Vivid Blue */
+.room-status-badge.occupied {
+    background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%) !important;
+    border-left: 3px solid #0d47a1;
+}
+
+/* Reserved: Fresh Green */
+.room-status-badge.reserved,
+.room-status-badge.pending_reservation {
+    background: linear-gradient(180deg, #43a047 0%, #388e3c 100%) !important;
+    border-left: 3px solid #1b5e20;
+}
+
+/* Maintenance: Red */
+.room-status-badge.maintenance {
+    background: linear-gradient(180deg, #e53935 0%, #d32f2f 100%) !important;
+    border-left: 3px solid #b71c1c;
+}
+
+/* Dirty: Orange/Amber */
+.room-status-badge.dirty {
+    background: linear-gradient(180deg, #fb8c00 0%, #f57c00 100%) !important;
+    border-left: 3px solid #e65100;
+}
+

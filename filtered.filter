@@ -1,0 +1,2 @@
+<td><small>${creator ? creator.name : (reservation.createdBy ? 'Bilinmir' : 'Sistem')}</small></td>
+

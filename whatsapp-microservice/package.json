@@ -1,0 +1,23 @@
+{
+  "name": "cardinal-whatsapp-microservice",
+  "version": "1.0.0",
+  "description": "WhatsApp Connection and Notification Microservice for Cardinal Hotel PMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "keywords": [
+    "whatsapp",
+    "microservice",
+    "hotel-pms",
+    "notifications"
+  ],
+  "author": "Hotel PMS Team",
+  "license": "MIT"
+}

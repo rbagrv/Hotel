@@ -1,0 +1,28 @@
+try {
+  // Send a dummy request to the configured API URL
+  const response = await fetch(`${currentApiUrl}/test-connection`, {
+    method: 'GET', // Or HEAD, or a small POST request for connection test
+    signal: AbortSignal.timeout(5000) // 5 second timeout
+  });
+
+  if (response.ok) {
+    testResultDiv.innerHTML = `<span style="color:#10b981;"><i class="fas fa-check-circle"></i> Qoşulma uğurlu!</span>`;
+  } else {
+    const errorText = await response.text();
+    testResultDiv.innerHTML = `<span style="color:#ef4444;"><i class="fas fa-times-circle"></i> Qoşulma uğursuz: ${response.status} ${response.statusText} (${errorText.substring(0, 50)}...)</span>`;
+  }
+} catch (error) {
+  console.error("Sunmi test connection error:", error);
+  let errorMessage = "Qoşulma xətası";
+  if (error.name === 'AbortError') {
+      errorMessage = "Qoşulma müddəti bitdi (5 saniyə). Server cavab vermədi.";
+  } else if (error.message.includes('Failed to fetch')) {
+      errorMessage = "Şəbəkə xətası və ya serverə çatmaq mümkün olmadı.";
+  } else {
+      errorMessage = error.message;
+  }
+  testResultDiv.innerHTML = `<span style="color:#ef4444;"><i class="fas fa-times-circle"></i> Xəta: ${errorMessage}</span>`;
+} finally {
+  testButton.disabled = false;
+}
+

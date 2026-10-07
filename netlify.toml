@@ -1,0 +1,9 @@
+[build]
+  # No specific build command is needed for a plain HTML/CSS/JS application.
+  # Netlify will simply deploy the static files as they are.
+  command = "echo 'No build command needed for this static site.'"
+  
+  # The directory to publish relative to the repository root.
+  # Since index.html and other assets are at the root, we publish from '.'
+  publish = "."
+
