@@ -23,7 +23,14 @@ class ModuleRenderer {
 
     const contentArea = document.getElementById('contentArea');
     if (!contentArea) {
-      console.error('Content area not found!');
+      setTimeout(() => {
+        const retryArea = document.getElementById('contentArea');
+        if (retryArea) {
+          this.renderModule(moduleName, data);
+        } else {
+          console.error('Content area not found!');
+        }
+      }, 150);
       return;
     }
 
