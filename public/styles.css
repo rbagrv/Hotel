@@ -11317,3 +11317,31 @@ body.login-active .floating-quick-actions {
     color: var(--text-light);
     white-space: nowrap;
 }
+
+/* HIGH-CONTRAST DUAL THEME ENGINE (READABILITY ACROSS NIGHT & DAY) */
+:root, [data-theme="light"], body:not([data-theme="dark"]) {
+    --text-color: #0f172a !important;
+    --text-light: #334155 !important;
+    --card-bg: #ffffff !important;
+    --background-color: #f8fafc !important;
+}
+
+[data-theme="dark"], body[data-theme="dark"], html[data-theme="dark"] {
+    --text-color: #f8fafc !important;
+    --text-light: #cbd5e1 !important;
+    --card-bg: #1e293b !important;
+    --background-color: #0b0f19 !important;
+}
+
+[data-theme="dark"] table th { background-color: #0f172a !important; color: #94a3b8 !important; }
+[data-theme="dark"] table td { color: #f8fafc !important; }
+[data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}
+[data-theme="dark"] .card, [data-theme="dark"] .modal-content {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+

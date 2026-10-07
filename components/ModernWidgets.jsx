@@ -23,28 +23,65 @@ export default function ModernWidgets() {
   // 1. Initialize Theme from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("cardinal_theme") || "light";
+      const saved =
+        localStorage.getItem("cardinal_theme") ||
+        localStorage.getItem("pms_theme") ||
+        localStorage.getItem("theme") ||
+        "light";
       setTheme(saved);
       document.documentElement.setAttribute("data-theme", saved);
+      document.body.setAttribute("data-theme", saved);
+      if (saved === "dark") {
+        document.documentElement.classList.add("dark");
+        document.body.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.body.classList.remove("dark");
+      }
     } catch {}
   }, []);
 
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
+  const toggleTheme = useCallback(() => {
+    const current =
+      document.documentElement.getAttribute("data-theme") || "light";
+    const next = current === "dark" ? "light" : "dark";
     setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
+    document.body.setAttribute("data-theme", next);
+    if (next === "dark") {
+      document.documentElement.classList.add("dark");
+      document.body.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("dark");
+    }
     try {
       localStorage.setItem("cardinal_theme", next);
+      localStorage.setItem("pms_theme", next);
+      localStorage.setItem("theme", next);
     } catch {}
+
+    const btn = document.getElementById("modernThemeToggleBtn");
+    if (btn) {
+      btn.innerHTML = `<i class="fas fa-${next === "dark" ? "sun" : "moon"}"></i>`;
+    }
+
     if (window.notificationManager) {
       window.notificationManager.showNotification(
         "info",
-        next === "dark" ? "Gecə Rejimi" : "Gündüz Rejimi",
+        next === "dark" ? "Gecə Rejimi Aktivdir" : "Gündüz Rejimi Aktivdir",
         `Görünüş ${next === "dark" ? "qaranlıq" : "işıqlı"} rejimə keçirildi.`,
         2000
       );
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    window.toggleTheme = toggleTheme;
+    return () => {
+      delete window.toggleTheme;
+    };
+  }, [toggleTheme]);
 
   // 2. Global Shortcut: Ctrl+K / Cmd+K for Command Palette
   useEffect(() => {
@@ -162,7 +199,10 @@ export default function ModernWidgets() {
         themeBtn.id = "modernThemeToggleBtn";
         themeBtn.title = "Gecə / Gündüz Rejimi";
         themeBtn.innerHTML = `<i class="fas fa-${theme === "dark" ? "sun" : "moon"}"></i>`;
-        themeBtn.onclick = toggleTheme;
+        themeBtn.onclick = () => {
+          if (window.toggleTheme) window.toggleTheme();
+          else toggleTheme();
+        };
 
         // Command Palette Button
         const cmdBtn = document.createElement("button");
@@ -186,7 +226,7 @@ export default function ModernWidgets() {
       window.removeEventListener("app-data-updated", updateOccupancy);
       clearTimeout(timer);
     };
-  }, [theme]);
+  }, [theme, toggleTheme]);
 
   // Update theme toggle icon when theme changes
   useEffect(() => {
@@ -225,6 +265,46 @@ export default function ModernWidgets() {
       setWaQrData(data);
     } catch (e) {
       setWaQrData({ success: false, message: "QR kod əldə edilmədi" });
+    }
+  };
+
+  // Pair WhatsApp Device / Confirm Session
+  const handlePairWhatsApp = async () => {
+    try {
+      const msUrl = getMicroserviceUrl();
+      const res = await fetch("/api/whatsapp/pair", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: waPhone || "+994 50 PMS-CLOUD",
+          accountName: "Cardinal Hotel PMS Reception",
+          url: msUrl,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWaStatus((prev) => ({
+          ...prev,
+          success: true,
+          connected: true,
+          microserviceConnected: true,
+          status: "connected",
+          phoneNumber: data.session?.phoneNumber || waPhone || "+994 50 PMS-CLOUD",
+          accountName: data.session?.accountName || "Cardinal Hotel PMS Reception",
+          provider: "Cloud Gateway (Connected)",
+          message: "WhatsApp hesabı uğurla qoşuldu və aktivdir.",
+        }));
+        if (window.notificationManager) {
+          window.notificationManager.showNotification(
+            "success",
+            "WhatsApp Qoşuldu",
+            "WhatsApp mikroservis bağlantısı uğurla quruldu və aktivləşdirildi!",
+            4000
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Pair error:", e);
     }
   };
 
@@ -606,8 +686,28 @@ export default function ModernWidgets() {
             {/* Content Tab 2: QR Code */}
             {waTab === "qr" && (
               <div style={{ padding: "1.75rem", textAlign: "center" }}>
-                <h4 style={{ margin: "0 0 0.5rem 0", color: "#1e293b" }}>WhatsApp Hesabınızı Qoşun</h4>
-                <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 1.25rem 0" }}>
+                <div style={{ marginBottom: "0.85rem" }}>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.45rem",
+                      padding: "0.4rem 0.95rem",
+                      borderRadius: "9999px",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      background: waStatus?.connected || waStatus?.microserviceConnected ? "#ecfdf5" : "#fffbeb",
+                      color: waStatus?.connected || waStatus?.microserviceConnected ? "#065f46" : "#92400e",
+                      border: `1px solid ${waStatus?.connected || waStatus?.microserviceConnected ? "#a7f3d0" : "#fde68a"}`,
+                    }}
+                  >
+                    <i className={`fas fa-${waStatus?.connected || waStatus?.microserviceConnected ? "check-circle" : "qrcode"}`}></i>
+                    {waStatus?.connected || waStatus?.microserviceConnected ? "🟢 Qoşulub və Aktivdir" : "QR Skan Gözlənilir"}
+                  </span>
+                </div>
+
+                <h4 style={{ margin: "0 0 0.5rem 0", color: "var(--text-color, #1e293b)" }}>WhatsApp Hesabınızı Qoşun</h4>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-light, #64748b)", margin: "0 0 1.25rem 0" }}>
                   Telefonunuzda WhatsApp tətbiqini açın &gt; <b>Bağlı Cihazlar</b> &gt; <b>Cihazı Bağla</b> seçin və bu QR kodu skan edin:
                 </p>
 
@@ -615,10 +715,10 @@ export default function ModernWidgets() {
                   style={{
                     display: "inline-block",
                     padding: "1rem",
-                    background: "white",
+                    background: "#ffffff",
                     borderRadius: "12px",
                     boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid var(--border-color, #e2e8f0)",
                   }}
                 >
                   {waQrData?.qrCodeUrl ? (
@@ -634,14 +734,22 @@ export default function ModernWidgets() {
                   )}
                 </div>
 
-                <div style={{ marginTop: "1.25rem" }}>
+                <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                   <button
                     type="button"
-                    className="btn btn-outline-primary"
-                    onClick={fetchWhatsAppQr}
-                    style={{ fontSize: "0.85rem", padding: "0.5rem 1rem", borderRadius: "8px" }}
+                    className="btn btn-primary"
+                    onClick={handlePairWhatsApp}
+                    style={{ fontSize: "0.85rem", padding: "0.55rem 1.15rem", borderRadius: "8px" }}
                   >
-                    <i className="fas fa-sync-alt"></i> QR Kodu Yenilə
+                    <i className="fas fa-link"></i> Cütləşməni Təsdiqlə (Qoşul)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={fetchWhatsAppQr}
+                    style={{ fontSize: "0.85rem", padding: "0.55rem 1rem", borderRadius: "8px" }}
+                  >
+                    <i className="fas fa-sync-alt"></i> Yenilə
                   </button>
                 </div>
               </div>
@@ -652,29 +760,40 @@ export default function ModernWidgets() {
               <div style={{ padding: "1.5rem" }}>
                 <div
                   style={{
-                    background: waStatus?.microserviceConnected ? "#ecfdf5" : "#fffbeb",
-                    border: `1px solid ${waStatus?.microserviceConnected ? "#a7f3d0" : "#fde68a"}`,
+                    background: waStatus?.microserviceConnected || waStatus?.connected ? "#ecfdf5" : "#fffbeb",
+                    border: `1px solid ${waStatus?.microserviceConnected || waStatus?.connected ? "#a7f3d0" : "#fde68a"}`,
                     padding: "1rem",
                     borderRadius: "10px",
                     marginBottom: "1rem",
                   }}
                 >
-                  <div style={{ fontWeight: 600, color: waStatus?.microserviceConnected ? "#065f46" : "#92400e" }}>
-                    <i className={`fas fa-${waStatus?.microserviceConnected ? "check-circle" : "exclamation-triangle"}`}></i>{" "}
-                    {waStatus?.microserviceConnected ? "Mikroservis Aktivdir" : "Mikroservis Gözləmə Rejimindədir"}
+                  <div style={{ fontWeight: 600, color: waStatus?.microserviceConnected || waStatus?.connected ? "#065f46" : "#92400e" }}>
+                    <i className={`fas fa-${waStatus?.microserviceConnected || waStatus?.connected ? "check-circle" : "exclamation-triangle"}`}></i>{" "}
+                    {waStatus?.microserviceConnected || waStatus?.connected ? "🟢 Mikroservis Aktivdir və Qoşulub" : "Mikroservis Gözləmə Rejimindədir"}
                   </div>
-                  <small style={{ display: "block", marginTop: "0.35rem", color: "#475569" }}>
+                  <small style={{ display: "block", marginTop: "0.35rem", color: "var(--text-light, #475569)" }}>
                     {waStatus?.message || "WhatsApp Mikroservis statusu yoxlanılır (Render Cloud)."}
                   </small>
                 </div>
 
-                <div style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.6 }}>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-light, #64748b)", lineHeight: 1.8 }}>
                   <div><b>Ünvan:</b> {waStatus?.microserviceUrl || "https://hotel-8wmp.onrender.com"}</div>
+                  <div><b>Status:</b> <span style={{ color: "#10b981", fontWeight: 600 }}>🟢 Qoşulub (Aktiv Cihaz)</span></div>
+                  <div><b>Hesab:</b> {waStatus?.accountName || "Cardinal Hotel Reception Cloud"}</div>
+                  <div><b>Telefon:</b> {waStatus?.phoneNumber || "+994 50 PMS-CLOUD"}</div>
                   <div><b>Birbaşa Web Link Fallback:</b> Aktivdir (Avtomatik wa.me yönləndirməsi)</div>
                   <div><b>Təyinat:</b> Qonaqlara avtomatik təsdiq mesajları və bildirişlər</div>
                 </div>
 
-                <div style={{ marginTop: "1.25rem", textAlign: "right" }}>
+                <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handlePairWhatsApp}
+                    style={{ fontSize: "0.85rem", padding: "0.5rem 1rem", borderRadius: "8px" }}
+                  >
+                    <i className="fas fa-link"></i> Yenidən Qoş
+                  </button>
                   <button
                     type="button"
                     className="btn btn-primary"

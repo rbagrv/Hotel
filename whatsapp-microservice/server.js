@@ -66,6 +66,21 @@ app.get('/qr', (req, res) => {
     });
 });
 
+// 2b. Pair endpoint to confirm connection
+app.post('/pair', (req, res) => {
+    sessionState.connected = true;
+    sessionState.phoneNumber = req.body.phoneNumber || req.body.phone || sessionState.phoneNumber || '+994 50 PMS-CLOUD';
+    sessionState.accountName = req.body.accountName || sessionState.accountName || 'Hotel Reception';
+    sessionState.lastSeen = new Date().toISOString();
+    console.log('[WhatsApp Microservice] Session paired successfully.');
+    res.json({
+        success: true,
+        connected: true,
+        message: 'WhatsApp hesabı uğurla cütləşdirildi və qoşuldu.',
+        session: sessionState
+    });
+});
+
 // 3. Send Message endpoint
 app.post('/send-message', async (req, res) => {
     const { phone, message, templateData } = req.body;

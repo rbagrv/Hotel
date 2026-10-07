@@ -1566,6 +1566,9 @@ ${error.stack || 'No stack trace available.'}
                             <button type="button" class="btn btn-secondary" onclick="window.moduleRenderer.checkMicroserviceStatus()" style="white-space:nowrap;">
                                 <i class="fas fa-sync"></i> Yoxla
                             </button>
+                            <button type="button" class="btn btn-primary" onclick="window.moduleRenderer.pairMicroservice()" style="white-space:nowrap;">
+                                <i class="fas fa-link"></i> Qoşul
+                            </button>
                         </div>
                         <small style="color:#64748b; font-size:0.75rem; display:block; margin-top:0.3rem;">
                             Render.com üzərində yerləşən WhatsApp serverinizin əsas linki.
@@ -1770,15 +1773,15 @@ async checkMicroserviceStatus() {
     try {
         const res = await fetch(`/api/whatsapp/status?url=${encodeURIComponent(url)}`);
         const data = await res.json();
-        if (data.success && data.microserviceConnected) {
+        if (data.success && (data.microserviceConnected || data.connected)) {
             if (badge) {
-                badge.innerHTML = `<i class="fas fa-check-circle"></i> Mikroservis Aktivdir`;
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> Mikroservis Aktivdir və Qoşulub`;
                 badge.style.background = '#ecfdf5';
                 badge.style.color = '#065f46';
                 badge.style.border = '1px solid #a7f3d0';
             }
-            if (statusMsg) statusMsg.innerHTML = `<span style="color:#059669; font-weight:600;"><i class="fas fa-check-circle"></i> Server (${url}) ilə əlaqə quruldu.</span>`;
-            window.notificationManager?.showNotification('success', 'WhatsApp Status', 'Mikroservis aktivdir və cavab verir.');
+            if (statusMsg) statusMsg.innerHTML = `<span style="color:#059669; font-weight:600;"><i class="fas fa-check-circle"></i> Server (${url}) ilə əlaqə quruldu və WhatsApp bağlandı.</span>`;
+            window.notificationManager?.showNotification('success', 'WhatsApp Status', 'Mikroservis aktivdir və WhatsApp hesabı qoşulub.');
         } else {
             if (badge) {
                 badge.innerHTML = `<i class="fas fa-info-circle"></i> Qoşulmağa Hazırdır`;
@@ -1798,6 +1801,41 @@ async checkMicroserviceStatus() {
         }
         if (statusMsg) statusMsg.innerHTML = `<span style="color:#dc2626;"><i class="fas fa-times-circle"></i> Xəta: ${err.message}</span>`;
         window.notificationManager?.showNotification('error', 'WhatsApp Xətası', 'Serverlə əlaqə yaradıla bilmədi.');
+    }
+}
+
+async pairMicroservice() {
+    const urlInput = document.getElementById('saWaMicroserviceUrl');
+    const url = urlInput?.value?.trim() || 'https://hotel-8wmp.onrender.com';
+    const badge = document.getElementById('saWaLiveStatusBadge');
+    const statusMsg = document.getElementById('saWaStatusMessage');
+
+    if (badge) {
+        badge.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Qoşulur...`;
+    }
+
+    try {
+        const res = await fetch('/api/whatsapp/pair', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: url, phone: '+994 50 PMS-CLOUD', accountName: 'Hotel PMS Reception' })
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (badge) {
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> Mikroservis Aktivdir və Qoşulub`;
+                badge.style.background = '#ecfdf5';
+                badge.style.color = '#065f46';
+                badge.style.border = '1px solid #a7f3d0';
+            }
+            if (statusMsg) statusMsg.innerHTML = `<span style="color:#059669; font-weight:600;"><i class="fas fa-check-circle"></i> WhatsApp mikroservis bağlantısı uğurla quruldu və aktivləşdirildi!</span>`;
+            window.notificationManager?.showNotification('success', 'WhatsApp Qoşuldu', 'WhatsApp mikroservis bağlantısı uğurla bağlandı.');
+        } else {
+            throw new Error(data.error || 'Qoşulma uğursuz oldu');
+        }
+    } catch (err) {
+        if (statusMsg) statusMsg.innerHTML = `<span style="color:#dc2626;"><i class="fas fa-times-circle"></i> Xəta: ${err.message}</span>`;
+        window.notificationManager?.showNotification('error', 'Xəta', err.message);
     }
 }
 }

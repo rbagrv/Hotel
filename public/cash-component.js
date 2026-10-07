@@ -703,13 +703,17 @@ class CashComponent {
             </body>
             </html>
         `;
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            window.notificationManager?.showNotification('error', 'Xəta', 'Popup bloklandı. Səhifə yenilənib yenidən cəhd edin.');
-            return;
+        if (typeof window.printHtmlViaHiddenIframe === 'function') {
+            window.printHtmlViaHiddenIframe(printHTML);
+        } else {
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(printHTML);
+                printWindow.document.close();
+            } else {
+                window.notificationManager?.showNotification('error', 'Xəta', 'Çap pəncərəsi açıla bilmədi.');
+            }
         }
-        printWindow.document.write(printHTML);
-        printWindow.document.close();
     }
 
     getAccountBalances(transactions) {

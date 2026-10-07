@@ -1,6 +1,57 @@
 import DashboardComponent from './dashboard-component.js';
 import QuickSearch from './quick-search.js';
 
+// Universal print helper using hidden iframe (bypasses browser popup blockers completely)
+if (typeof window !== 'undefined') {
+    window.printHtmlViaHiddenIframe = function(htmlContent) {
+        try {
+            let iframe = document.getElementById('pms-print-hidden-iframe');
+            if (iframe) {
+                iframe.remove();
+            }
+            iframe = document.createElement('iframe');
+            iframe.id = 'pms-print-hidden-iframe';
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            iframe.style.opacity = '0';
+            iframe.style.pointerEvents = 'none';
+            document.body.appendChild(iframe);
+
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(htmlContent);
+            doc.close();
+
+            setTimeout(() => {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch (err) {
+                    console.warn('Iframe print error, falling back:', err);
+                    const win = window.open('', '_blank');
+                    if (win) {
+                        win.document.write(htmlContent);
+                        win.document.close();
+                    }
+                }
+            }, 350);
+        } catch (e) {
+            console.error('Print error:', e);
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(htmlContent);
+                win.document.close();
+            } else if (window.notificationManager) {
+                window.notificationManager.showNotification('error', 'Çap Xətası', 'Brauzer çap əmrini icra edə bilmədi.');
+            }
+        }
+    };
+}
+
 class HotelPMS {
     constructor() {
         console.log('HotelPMS instance is being created...');
@@ -631,11 +682,22 @@ class HotelPMS {
      * Initializes dark mode based on user preference or system setting.
      */
     initDarkMode() {
-        const theme = localStorage.getItem('pms_theme');
+        const theme = localStorage.getItem('cardinal_theme') || localStorage.getItem('pms_theme') || localStorage.getItem('theme');
         if (theme) {
             document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
+            }
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.setAttribute('data-theme', 'dark');
+            document.documentElement.classList.add('dark');
+            document.body.classList.add('dark');
         }
     }
 
@@ -1681,13 +1743,15 @@ class HotelPMS {
             </html>
         `;
 
-        const win = window.open('', '_blank');
-        if (!win) {
-            this.notificationManager?.showNotification('warning', 'Pəncərə Bloklandı', 'Zəhmət olmasa, çap üçün brauzerdə popup pəncərələrə icazə verin.');
-            return;
+        if (typeof window.printHtmlViaHiddenIframe === 'function') {
+            window.printHtmlViaHiddenIframe(printHTML);
+        } else {
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(printHTML);
+                win.document.close();
+            }
         }
-        win.document.write(printHTML);
-        win.document.close();
     }
 
     printPOSReceipt(saleId) {
@@ -1798,9 +1862,15 @@ class HotelPMS {
             </html>
         `;
 
-        const win = window.open('', '_blank');
-        win.document.write(printHTML);
-        win.document.close();
+        if (typeof window.printHtmlViaHiddenIframe === 'function') {
+            window.printHtmlViaHiddenIframe(printHTML);
+        } else {
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(printHTML);
+                win.document.close();
+            }
+        }
     }
 
     // Purchase Document Methods
@@ -2490,27 +2560,17 @@ class HotelPMS {
                 this.notificationManager?.showNotification('error', 'Xəta', 'Hesabat tapılmadı.');
                 return;
             }
-            const win = window.open('', '_blank');
-            const styles = `
-                <style>
-                    body { font-family: 'Inter', Arial, sans-serif; color:#1f2937; }
-                    .report-content-body { padding: 16px; }
-                    .report-body { margin-top: 12px; }
-                    .bill-info { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; }
-                    .bill-info div { flex-basis: 48%; }
-                    .bill-info h3 { font-size: 14px; color: #4b5563; margin-top: 0; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
-                    .bill-info p { margin: 2px 0; }
-                    .reservation-summary { background-color: #f3f4f6; padding: 15px; border-radius: 6px; margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 13px; }
-                    .summary-item strong { color: #111827; }
-                    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-                    table th, table td { border-bottom:1px solid #e5e7eb; padding:8px; }
-                    .status-badge { padding:2px 8px; border-radius:10px; font-size:12px; }
-                    .text-right { text-align:right; } .text-center { text-align:center; }
-                </style>
-            `;
-            win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Hesabat</title>${styles}</head><body>${el.innerHTML}</body></html>`);
-            win.document.close();
-            win.onload = () => { setTimeout(() => win.print(), 300); };
+            const reportHTML = `<!doctype html><html><head><meta charset="utf-8"><title>Hesabat</title>${styles}</head><body>${el.innerHTML}</body></html>`;
+            if (typeof window.printHtmlViaHiddenIframe === 'function') {
+                window.printHtmlViaHiddenIframe(reportHTML);
+            } else {
+                const win = window.open('', '_blank');
+                if (win) {
+                    win.document.write(reportHTML);
+                    win.document.close();
+                    win.onload = () => { setTimeout(() => win.print(), 300); };
+                }
+            }
         } catch (e) {
             this.notificationManager?.showNotification('error', 'Çap Xətası', e.message || 'Hesabat çap olunmadı.');
         }

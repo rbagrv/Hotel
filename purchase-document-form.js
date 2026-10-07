@@ -725,9 +725,15 @@ export default class PurchaseDocumentForm {
                 </script>
             </body></html>
         `;
-        const win = window.open('', '_blank');
-        win.document.write(printHTML);
-        win.document.close();
+        if (typeof window.printHtmlViaHiddenIframe === 'function') {
+            window.printHtmlViaHiddenIframe(printHTML);
+        } else {
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(printHTML);
+                win.document.close();
+            }
+        }
     }
 
     // Ödəniş yarat: aç cash form modal for expense (təchizat alışı) with amount & desc filled
