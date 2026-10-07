@@ -132,6 +132,28 @@ export default class DashboardComponent {
 
         return `
             <div class="dashboard-overview">
+                <!-- Modern Quick Action Ribbon -->
+                <div class="dashboard-quick-actions-bar">
+                    <button class="quick-action-pill primary" onclick="window.modalManager.showReservationForm()">
+                        <i class="fas fa-calendar-plus"></i> <span>+ Yeni Rezervasiya</span>
+                    </button>
+                    <button class="quick-action-pill" onclick="window.guestForm?.openCreateModal ? window.guestForm.openCreateModal() : window.modalManager.showGuestForm()">
+                        <i class="fas fa-user-plus"></i> <span>+ Qonaq Qeydiyyatı</span>
+                    </button>
+                    <button class="quick-action-pill" onclick="window.app.loadModule('rooms')">
+                        <i class="fas fa-bed"></i> <span>Otaqlar Paneli</span>
+                    </button>
+                    <button class="quick-action-pill" onclick="window.app.loadModule('pos')">
+                        <i class="fas fa-cash-register"></i> <span>POS Satış</span>
+                    </button>
+                    <button class="quick-action-pill" onclick="window.modalManager.showCashTransactionForm()">
+                        <i class="fas fa-wallet"></i> <span>Kassa Əməliyyatı</span>
+                    </button>
+                    <button class="quick-action-pill" onclick="window.app.loadModule('reports')">
+                        <i class="fas fa-chart-line"></i> <span>Maliyyə Hesabatı</span>
+                    </button>
+                </div>
+
                 <!-- HotelFriend Style Top Overview Banner -->
                 <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.25rem;">
                     <!-- Reservations Ring Card -->

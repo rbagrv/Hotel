@@ -1332,9 +1332,18 @@
                 <input type="text" class="luxuria-top-search-input" id="ezeeTopSearchInput" 
                        placeholder="Axtarış edin... (Qonaq, Otaq, Rezervasiya) - CTRL+K"
                        onclick="window.quickSearch && window.quickSearch.openModal ? window.quickSearch.openModal() : (document.getElementById('globalSearchTrigger') && document.getElementById('globalSearchTrigger').click())">
+                <span class="search-kbd-shortcut">Ctrl+K</span>
             </div>
 
             <div class="luxuria-top-right">
+                <div class="top-stat-pill desktop-only" id="topBarOccupancyPill" title="Cari otaq doluluğu">
+                    <i class="fas fa-bed"></i>
+                    <span>Doluluq: <b id="topBarOccupancyText">0%</b></span>
+                </div>
+                <div class="top-clock-pill desktop-only" id="topBarClockPill" title="Cari vaxt">
+                    <i class="far fa-clock"></i>
+                    <span id="topBarLiveTime">--:--</span>
+                </div>
                 <button class="luxuria-top-btn" id="firebaseSyncBtn" title="Sinxronizasiya Statusu" onclick="window.debugFirebaseSync()">
                     <span id="firebaseSyncIcon"><span class="material-icons-outlined">cloud_sync</span></span>
                 </button>
@@ -1372,11 +1381,16 @@
                 </div>
 
                 <nav class="sidebar-nav">
+                    <div class="sidebar-section-title">ƏSAS</div>
                     <ul>
                         <li><a href="#" data-module="dashboard" class="nav-link active">
                             <i class="fas fa-th-large"></i>
                             <span>Dashboard</span>
                         </a></li>
+                    </ul>
+
+                    <div class="sidebar-section-title">QONAQLAMA & OTAQLAR</div>
+                    <ul>
                         <li><a href="#" data-module="reservations" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Rezervasiyalar</span>
@@ -1393,13 +1407,13 @@
                             <i class="fas fa-concierge-bell"></i>
                             <span>Xidmətlər</span>
                         </a></li>
+                    </ul>
+
+                    <div class="sidebar-section-title">SATIŞ & MALİYYƏ</div>
+                    <ul>
                         <li><a href="#" data-module="pos" class="nav-link">
                             <i class="fas fa-cash-register"></i>
                             <span>POS Satış</span>
-                        </a></li>
-                        <li><a href="#" data-module="maintenance" class="nav-link">
-                            <i class="fas fa-broom"></i>
-                            <span>Təmizlik & Təmir</span>
                         </a></li>
                         <li><a href="#" data-module="invoices" class="nav-link">
                             <i class="fas fa-file-invoice-dollar"></i>
@@ -1409,13 +1423,21 @@
                             <i class="fas fa-wallet"></i>
                             <span>Kassa</span>
                         </a></li>
-                        <li><a href="#" data-module="inventory" class="nav-link">
-                            <i class="fas fa-boxes"></i>
-                            <span>Anbar</span>
-                        </a></li>
                         <li><a href="#" data-module="purchase_documents" class="nav-link">
                             <i class="fas fa-shopping-cart"></i>
                             <span>Alış Sənədləri</span>
+                        </a></li>
+                    </ul>
+
+                    <div class="sidebar-section-title">TƏSƏRRÜFAT & İDARƏETMƏ</div>
+                    <ul>
+                        <li><a href="#" data-module="maintenance" class="nav-link">
+                            <i class="fas fa-broom"></i>
+                            <span>Təmizlik & Təmir</span>
+                        </a></li>
+                        <li><a href="#" data-module="inventory" class="nav-link">
+                            <i class="fas fa-boxes"></i>
+                            <span>Anbar</span>
                         </a></li>
                         <li><a href="#" data-module="staff" class="nav-link">
                             <i class="fas fa-user-tie"></i>
@@ -1425,6 +1447,10 @@
                             <i class="fas fa-chart-bar"></i>
                             <span>Hesabatlar</span>
                         </a></li>
+                    </ul>
+
+                    <div class="sidebar-section-title">SİSTEM & TƏNZİMLƏMƏLƏR</div>
+                    <ul>
                         <li id="settings-nav-item"><a href="#" data-module="settings" class="nav-link">
                             <i class="fas fa-cog"></i>
                             <span>Tənzimləmələr</span>
@@ -1435,6 +1461,19 @@
                         </a></li>
                     </ul>
                 </nav>
+
+                <div class="luxuria-sidebar-footer">
+                    <div class="sidebar-user-mini">
+                        <span class="user-status-dot online"></span>
+                        <div class="user-info-text">
+                            <span class="user-name-label" id="sidebarUserName">İstifadəçi</span>
+                            <span class="user-role-label" id="sidebarUserRole">Administrator</span>
+                        </div>
+                        <button class="sidebar-quick-logout" onclick="window.authManager.logout()" title="Çıxış">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
             </aside>
 
         <!-- Sidebar Overlay -->

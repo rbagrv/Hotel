@@ -120,10 +120,24 @@ export default function ModernWidgets() {
         ).length;
         const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
         setOccupancy({ total, occupied, percent: pct });
+        const occEl = document.getElementById("topBarOccupancyText");
+        if (occEl) occEl.textContent = `${pct}%`;
+      }
+    };
+
+    const updateClock = () => {
+      const timeEl = document.getElementById("topBarLiveTime");
+      if (timeEl) {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        timeEl.textContent = `${hours}:${minutes}`;
       }
     };
 
     updateOccupancy();
+    updateClock();
+    const clockInterval = setInterval(updateClock, 30000);
     window.addEventListener("app-data-updated", updateOccupancy);
 
     const injectTopControls = () => {
@@ -159,6 +173,7 @@ export default function ModernWidgets() {
     const timer = setTimeout(injectTopControls, 1000);
 
     return () => {
+      clearInterval(clockInterval);
       window.removeEventListener("app-data-updated", updateOccupancy);
       clearTimeout(timer);
     };
