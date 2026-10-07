@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
         {/* Core Stylesheets */}
         <link rel="stylesheet" href="/styles.css" />
         <link rel="stylesheet" href="/modern-theme.css" />
+        <link rel="stylesheet" href="/modern-next.css" />
 
         {/* Fonts & Icons */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
