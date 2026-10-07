@@ -286,7 +286,7 @@ class HybridDB {
                     const timeoutError = new Error('Firebase bağlantısı vaxt aşımına uğradı.');
                     timeoutError.code = 'deadline-exceeded';
                     reject(timeoutError);
-                }, 1500))
+                }, 6000))
             ]);
 
             console.log('HybridDB: Firebase connection successful.');

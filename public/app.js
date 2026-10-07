@@ -98,7 +98,7 @@ class HotelPMS {
         // must not prevent the login screen/local cache from opening.
         let retries = 0;
         while ((!window.authManager || !window.hybridDB) && retries < 30) {
-            console.warn(`HotelPMS.init: Waiting for local core services... (Attempt ${retries + 1})`);
+            if (retries > 1) console.warn(`HotelPMS.init: Waiting for local core services... (Attempt ${retries + 1})`);
             await new Promise(resolve => setTimeout(resolve, 50));
             retries++;
         }

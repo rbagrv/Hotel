@@ -292,12 +292,10 @@ export default class ReservationsComponent {
         `;
 
         if (isCalendarTab) {
-            const stayViewCalendar = window.roomsComponent && typeof window.roomsComponent.renderRoomsCalendar === 'function'
-                ? window.roomsComponent.renderRoomsCalendar(data)
-                : this.renderCalendarView(data);
+            const calendarView = this.renderCalendarView(data);
             return `
                 ${tabNav}
-                ${stayViewCalendar}
+                ${calendarView}
             `;
         }
         
@@ -452,22 +450,23 @@ export default class ReservationsComponent {
     }
 
     renderCalendarView(data) {
-        // Use component's own getFilter/setFilter methods
-        const date = new Date(this.getFilter('calendarDate', new Date().toISOString()));
+        // Use component's own getFilter/setFilter methods, defaulting to current date
+        let date = new Date(this.getFilter('calendarDate', new Date().toISOString()));
+        if (isNaN(date.getTime())) date = new Date();
         const year = date.getFullYear();
         const month = date.getMonth();
 
         const monthNames = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
-        const daysOfWeek = ["B.e.", "Ç.a.", "Ç.", "C.a.", "C.", "Ş.", "B."];
+        const daysOfWeek = ["Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə", "Bazar"];
 
         const firstDayOfMonth = new Date(year, month, 1);
         const lastDayOfMonth = new Date(year, month + 1, 0);
 
         // Filter rooms based on selected room type filter
         const allRooms = data.rooms || [];
-        const roomTypeFilter = this.getFilter('calRoomTypeFilter');
+        const roomTypeFilter = this.getFilter('calRoomTypeFilter') || 'Bütün Növlər';
         
-        const roomTypes = ['Bütün Növlər', ...Array.from(new Set(allRooms.map((r) => r.type)))];
+        const roomTypes = ['Bütün Növlər', ...Array.from(new Set(allRooms.map((r) => r.type).filter(Boolean)))];
 
         // Get today's local date object and normalize it for consistent comparison
         const todayLocal = new Date();
@@ -475,62 +474,79 @@ export default class ReservationsComponent {
 
         // --- Start of new calendar structure HTML ---
         let calendarHtml = `
-            <div class="card table-container">
-                <div class="card-header table-header">
+            <div class="card table-container" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <div class="card-header table-header" style="display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; flex-wrap:wrap; gap:1rem;">
                     <div>
-                        <h3 class="table-title">Rezervasiya Təqvimi</h3>
-                        <p class="text-light" style="font-size:0.9em; margin-top:0.3em;">Otaqların vəziyyətinə və rezervasiyalara baxın.</p>
+                        <h3 class="table-title" style="margin:0; font-size:1.15rem; font-weight:700;">Aylıq Rezervasiya Təqvimi</h3>
+                        <p class="text-light" style="font-size:0.85rem; margin:0.25rem 0 0 0; color:#64748b;">
+                            Seçilmiş ay üzrə otaqların məşğulluğu və rezervasiyalar cədvəli.
+                        </p>
                     </div>
                     <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                        <button class="btn btn-secondary sm-hidden" onclick="window.reservationsComponent.setFilter('calIsFilterOpen', !(window.reservationsComponent.getFilter('calIsFilterOpen') === 'true')); window.app.loadModule('reservations');">
-                            <i class="fas fa-filter"></i> Otaq Növü
-                        </button>
-                        <select class="form-select w-full sm-visible" style="min-width:180px;" onchange="window.reservationsComponent.setFilter('calRoomTypeFilter', this.value); window.app.loadModule('reservations');">
-                            <option value="Bütün Növlər" ${roomTypeFilter === 'Bütün Növlər' ? 'selected' : ''}>Bütün Növlər</option>
-                            ${roomTypes.filter(t => t !== 'Bütün Növlər').map(type => `
+                        <span style="font-size:0.85rem; color:#475569; font-weight:500;">Otaq növü:</span>
+                        <select class="form-select" style="min-width:160px; font-size:0.85rem; padding:0.35rem 0.6rem;" onchange="window.reservationsComponent.setFilter('calRoomTypeFilter', this.value); window.app.loadModule('reservations');">
+                            ${roomTypes.map(type => `
                                 <option value="${type}" ${roomTypeFilter === type ? 'selected' : ''}>${type}</option>
                             `).join('')}
                         </select>
+                        <button class="btn btn-primary btn-sm" onclick="window.modalManager.showReservationForm()">
+                            <i class="fas fa-plus"></i> + Yeni Rezervasiya
+                        </button>
                     </div>
                 </div>
-                <div class="collapsible-filter-content ${this.getFilter('calIsFilterOpen') === 'true' ? 'open' : ''} sm-hidden" style="padding:1rem;">
-                    <select class="form-select w-full" onchange="window.reservationsComponent.setFilter('calRoomTypeFilter', this.value); window.app.loadModule('reservations');">
-                        <option value="Bütün Növlər" ${roomTypeFilter === 'Bütün Növlər' ? 'selected' : ''}>Bütün Növlər</option>
-                        ${roomTypes.filter(t => t !== 'Bütün Növlər').map(type => `
-                            <option value="${type}" ${roomTypeFilter === type ? 'selected' : ''}>${type}</option>
+
+                <!-- Calendar Month Navigation Header -->
+                <div class="calendar-nav-controls" style="display:flex; justify-content:space-between; align-items:center; padding:0.85rem 1.5rem; background:#f8fafc; border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:0.75rem;">
+                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.reservationsComponent.changeMonth(-1)" title="Əvvəlki ay" style="font-size:0.85rem; padding:0.35rem 0.75rem;">
+                            <i class="fas fa-chevron-left"></i> Əvvəlki
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="window.reservationsComponent.goToToday()" title="Cari aya qayıt" style="font-size:0.85rem; padding:0.35rem 0.75rem; background:#e2e8f0; color:#1e293b; font-weight:600;">
+                            <i class="fas fa-calendar-day"></i> Bu gün
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="window.reservationsComponent.changeMonth(1)" title="Növbəti ay" style="font-size:0.85rem; padding:0.35rem 0.75rem;">
+                            Növbəti <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <h2 style="margin:0; font-size:1.35rem; font-weight:700; color:#1e293b; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="far fa-calendar-alt" style="color:#0284c7;"></i> ${monthNames[month]} ${year}
+                    </h2>
+
+                    <div style="display:flex; gap:0.5rem; font-size:0.75rem; color:#64748b;">
+                        <span style="display:inline-flex; align-items:center; gap:0.3rem;"><span style="width:10px; height:10px; border-radius:50%; background:#0284c7;"></span> Təsdiqlənib</span>
+                        <span style="display:inline-flex; align-items:center; gap:0.3rem;"><span style="width:10px; height:10px; border-radius:50%; background:#d97706;"></span> Gözləyir</span>
+                        <span style="display:inline-flex; align-items:center; gap:0.3rem;"><span style="width:10px; height:10px; border-radius:50%; background:#16a34a;"></span> Yerləşib</span>
+                    </div>
+                </div>
+
+                <div class="calendar-grid-container" style="padding:1rem;">
+                    <div class="calendar-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;">
+                        ${daysOfWeek.map(day => `
+                            <div class="calendar-day-name" style="text-align:center; font-weight:700; font-size:0.8rem; color:#475569; padding:0.5rem 0; background:#f1f5f9; border-radius:6px;">
+                                ${day}
+                            </div>
                         `).join('')}
-                    </select>
-                </div>
-                <div class="calendar-nav-controls" style="display:flex; justify-content:space-between; align-items:center; padding:1em 1.5em; border-bottom:1px solid var(--border-color);">
-                    <button class="btn btn-secondary" onclick="window.reservationsComponent.changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <h2 style="margin:0; font-size:1.25rem;">${monthNames[month]} ${year}</h2>
-                    <button class="btn btn-secondary" onclick="window.reservationsComponent.changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar-grid-container" style="padding:1.5em;">
-                    <div class="calendar-grid">
-                        ${daysOfWeek.map(day => `<div class="calendar-day-name">${day}</div>`).join('')}
             `;
 
-        // Fill leading empty days
-        const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Monday = 0, Sunday = 6
+        // Fill leading empty days (Monday = 0, Sunday = 6)
+        const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7;
         for (let i = 0; i < startDayOfWeek; i++) {
-            calendarHtml += `<div class="calendar-day empty"></div>`;
+            calendarHtml += `<div class="calendar-day empty" style="background:transparent; border:none; min-height:105px;"></div>`;
         }
 
         // Fill days of the month
         for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
             const currentDate = new Date(year, month, day);
-            // Normalize current calendar day to start of day for comparison
             currentDate.setHours(0, 0, 0, 0);
 
-            // Compare local date objects directly for 'isToday'
             const isToday = currentDate.getTime() === todayLocal.getTime();
 
-            const reservationsForDay = data.reservations.filter(res => {
-                if (!['confirmed', 'pending'].includes(res.status)) return false; // Show confirmed and pending
+            const reservationsForDay = (data.reservations || []).filter(res => {
+                if (!['confirmed', 'pending', 'occupied'].includes(res.status)) return false;
                 const checkIn = this._parseDateAsUTC(res.checkIn);
                 const checkOut = this._parseDateAsUTC(res.checkOut);
-                if (!checkIn || !checkOut) return false; // Guard against missing/invalid dates
+                if (!checkIn || !checkOut) return false;
 
                 // Filter by room type if selected
                 const room = allRooms.find(r => r.id === res.roomId);
@@ -538,46 +554,69 @@ export default class ReservationsComponent {
                     return false;
                 }
 
-                // Logic for "occupied" status for the visual calendar cell: checkIn <= currentDate < checkOut
-                // This means the room is occupied *for the night* before checkout.
-                return checkIn.getTime() <= currentDate.getTime() && currentDate.getTime() < checkOut.getTime();
+                // Check-in day OR staying overnight
+                return (checkIn.getTime() <= currentDate.getTime() && currentDate.getTime() < checkOut.getTime()) ||
+                       (res.checkIn === `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`);
             });
 
-            // Manually construct YYYY-MM-DD string from local date components to avoid UTC offset shift
             const localDateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
             calendarHtml += `
                 <div class="calendar-day ${isToday ? 'today' : ''}" 
-                     onclick="window.reservationsComponent.showReservationsForDay('${localDateString}')"> <!-- Make day clickable with correct local date -->
-                    <div class="day-number">${day}</div>
-                    <div class="reservations-on-day">
-                        ${reservationsForDay.map(res => {
-                            const guest = data.guests.find(g => g.id === res.guestId);
-                            const room = data.rooms.find(rm => rm.id === res.roomId);
+                     style="background:${isToday ? '#f0f9ff' : '#ffffff'}; border:${isToday ? '2px solid #0284c7' : '1px solid #e2e8f0'}; border-radius:8px; min-height:105px; padding:0.4rem; display:flex; flex-direction:column; cursor:pointer; transition:all 0.15s ease;"
+                     onmouseover="this.style.boxShadow='0 4px 10px rgba(0,0,0,0.08)'" 
+                     onmouseout="this.style.boxShadow='none'"
+                     onclick="window.reservationsComponent.showReservationsForDay('${localDateString}')">
+                    <div class="day-number" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                        <span style="${isToday ? 'background:#0284c7; color:#ffffff; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75rem;' : 'font-weight:600; font-size:0.8rem; color:#1e293b;'}">
+                            ${day}
+                        </span>
+                        ${reservationsForDay.length > 0 ? `<span style="font-size:0.7rem; color:#64748b; font-weight:600;">${reservationsForDay.length} rez.</span>` : ''}
+                    </div>
+                    <div class="reservations-on-day" style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:80px;">
+                        ${reservationsForDay.slice(0, 3).map(res => {
+                            const guest = (data.guests || []).find(g => g.id === res.guestId);
+                            const room = allRooms.find(rm => rm.id === res.roomId);
                             const guestName = guest ? (guest.name || '').split(' ')[0] : 'Qonaq';
-                            const roomNumber = room ? room.number : 'N/A';
+                            const roomNumber = room ? room.number : 'Otaq';
                             const resPublicId = res.publicId || (window.app ? window.app.formatInternalId(res.id, 'RZ') : res.id);
-                            const title = `${window.escapeHtml(guest?.name || '')} - Otaq ${window.escapeHtml(roomNumber)} (${window.app.formatDate(res.checkIn)} - ${window.app.formatDate(res.checkOut)}) - ${window.statusHelper.getReservationStatus(res.status)} (ID: ${resPublicId})`;
-                            const statusClass = res.status; // 'confirmed' or 'pending'
+                            const title = `${window.escapeHtml(guest?.name || '')} - Otaq ${window.escapeHtml(roomNumber)} (${res.checkIn} - ${res.checkOut}) - ${res.status}`;
+                            
+                            let badgeBg = '#0284c7';
+                            if (res.status === 'occupied') badgeBg = '#16a34a';
+                            else if (res.status === 'pending') badgeBg = '#d97706';
 
-                            return `<div class="reservation-cal-item ${statusClass}" title="${window.escapeHtml(title)}">
-                                ${window.escapeHtml(roomNumber)}: ${window.escapeHtml(guestName)}
+                            return `<div class="reservation-cal-item" 
+                                         style="background:${badgeBg}; color:#fff; padding:2px 5px; border-radius:4px; font-size:0.68rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" 
+                                         title="${window.escapeHtml(title)}">
+                                <b>${window.escapeHtml(roomNumber)}</b>: ${window.escapeHtml(guestName)}
                             </div>`;
                         }).join('')}
+                        ${reservationsForDay.length > 3 ? `
+                            <div style="font-size:0.65rem; color:#0284c7; font-weight:700; text-align:center;">
+                                +${reservationsForDay.length - 3} daha çox
+                            </div>
+                        ` : ''}
                     </div>
                 </div>`;
         }
 
-        calendarHtml += `</div></div></div>`; // Close calendar-grid, calendar-grid-container, and card
+        calendarHtml += `</div></div></div>`;
         return calendarHtml;
     }
 
     changeMonth(delta) {
-        // Use component's own getFilter/setFilter methods
-        const currentDate = new Date(this.getFilter('calendarDate', new Date().toISOString()));
+        let currentDate = new Date(this.getFilter('calendarDate', new Date().toISOString()));
+        if (isNaN(currentDate.getTime())) currentDate = new Date();
+        currentDate.setDate(1); // Set to 1st to prevent rollover bug (e.g. 31 to 30)
         currentDate.setMonth(currentDate.getMonth() + delta);
         this.setFilter('calendarDate', currentDate.toISOString());
-        window.app.loadModule('reservations');
+        window.app?.loadModule('reservations');
+    }
+
+    goToToday() {
+        this.setFilter('calendarDate', new Date().toISOString());
+        window.app?.loadModule('reservations');
     }
 
     attachImportListeners() {
