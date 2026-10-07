@@ -719,7 +719,7 @@ class HotelPMS {
                 if (key === RESERVATIONS_KEY) {
                     reservationsPromise = this.ws.collection(name).getList().then((list) => {
                         this.data[key] = list;
-                        if (this.currentModule === RESERVATIONS_KEY || this.currentModule === 'dashboard') {
+                        if (this.currentModule === RESERVATIONS_KEY) {
                             this.loadModule(this.currentModule, { fromHistory: true });
                         }
                         return list;

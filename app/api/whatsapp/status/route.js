@@ -2,13 +2,30 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const microserviceUrl = process.env.WHATSAPP_MICROSERVICE_URL || "http://localhost:3001";
+export async function GET(request) {
+  return handleStatus(request);
+}
+
+export async function POST(request) {
+  return handleStatus(request);
+}
+
+async function handleStatus(request) {
+  let customUrl = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    customUrl = searchParams.get("url");
+    if (!customUrl && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      customUrl = body.url || body.microserviceUrl;
+    }
+  } catch (_) {}
+
+  const microserviceUrl = customUrl || process.env.WHATSAPP_MICROSERVICE_URL || "https://hotel-8wmp.onrender.com";
   
   try {
-    // Attempt ping to standalone microservice
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
     const res = await fetch(`${microserviceUrl}/status`, {
       signal: controller.signal,
@@ -27,7 +44,6 @@ export async function GET() {
       });
     }
 
-    // Fallback status if standalone microservice is offline or using Cloud API
     const isCloudConfigured = Boolean(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
 
     return NextResponse.json({
@@ -37,7 +53,7 @@ export async function GET() {
       status: isCloudConfigured ? "cloud_ready" : "ready_for_pairing",
       message: isCloudConfigured 
         ? "WhatsApp Cloud API aktivdir." 
-        : "WhatsApp Mikroservis hazır vəziyyətdədir (QR kod və ya mikroservis başlatmaq lazımdır).",
+        : `Mikroservis (${microserviceUrl}) hazır vəziyyətdədir.`,
       directWebFallbackAvailable: true,
     });
   } catch (err) {
@@ -45,6 +61,7 @@ export async function GET() {
       success: false,
       error: err.message,
       microserviceConnected: false,
+      microserviceUrl,
     }, { status: 500 });
   }
 }

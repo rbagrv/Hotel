@@ -71,12 +71,21 @@ export default function ModernWidgets() {
       if (tab === "status") fetchWhatsAppStatus();
     };
 
+    const getMicroserviceUrl = () => {
+      return (
+        window.app?.getSetting?.("whatsappSettings")?.microserviceUrl ||
+        window.app?.getSetting?.("whatsappMicroserviceUrl") ||
+        "https://hotel-8wmp.onrender.com"
+      );
+    };
+
     window.sendWhatsAppNotification = async (phone, message) => {
       try {
+        const msUrl = getMicroserviceUrl();
         const res = await fetch("/api/whatsapp/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, message }),
+          body: JSON.stringify({ phone, message, microserviceUrl: msUrl }),
         });
         const data = await res.json();
         if (data.success) {
@@ -187,10 +196,19 @@ export default function ModernWidgets() {
     }
   }, [theme]);
 
+  const getMicroserviceUrl = () => {
+    return (
+      window.app?.getSetting?.("whatsappSettings")?.microserviceUrl ||
+      window.app?.getSetting?.("whatsappMicroserviceUrl") ||
+      "https://hotel-8wmp.onrender.com"
+    );
+  };
+
   // Fetch WhatsApp Status from API
   const fetchWhatsAppStatus = async () => {
     try {
-      const res = await fetch("/api/whatsapp/status");
+      const msUrl = getMicroserviceUrl();
+      const res = await fetch(`/api/whatsapp/status?url=${encodeURIComponent(msUrl)}`);
       const data = await res.json();
       setWaStatus(data);
     } catch (e) {
@@ -201,7 +219,8 @@ export default function ModernWidgets() {
   // Fetch WhatsApp QR Code
   const fetchWhatsAppQr = async () => {
     try {
-      const res = await fetch("/api/whatsapp/qr");
+      const msUrl = getMicroserviceUrl();
+      const res = await fetch(`/api/whatsapp/qr?url=${encodeURIComponent(msUrl)}`);
       const data = await res.json();
       setWaQrData(data);
     } catch (e) {
@@ -218,10 +237,11 @@ export default function ModernWidgets() {
 
     setWaSending(true);
     try {
+      const msUrl = getMicroserviceUrl();
       const res = await fetch("/api/whatsapp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: waPhone, message: waMessage }),
+        body: JSON.stringify({ phone: waPhone, message: waMessage, microserviceUrl: msUrl }),
       });
       const data = await res.json();
 
@@ -644,12 +664,12 @@ export default function ModernWidgets() {
                     {waStatus?.microserviceConnected ? "Mikroservis Aktivdir" : "Mikroservis Gözləmə Rejimindədir"}
                   </div>
                   <small style={{ display: "block", marginTop: "0.35rem", color: "#475569" }}>
-                    {waStatus?.message || "Port 3001 üzərində WhatsApp Mikroservis statusu yoxlanılır."}
+                    {waStatus?.message || "WhatsApp Mikroservis statusu yoxlanılır (Render Cloud)."}
                   </small>
                 </div>
 
                 <div style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.6 }}>
-                  <div><b>Ünvan:</b> {waStatus?.microserviceUrl || "http://localhost:3001"}</div>
+                  <div><b>Ünvan:</b> {waStatus?.microserviceUrl || "https://hotel-8wmp.onrender.com"}</div>
                   <div><b>Birbaşa Web Link Fallback:</b> Aktivdir (Avtomatik wa.me yönləndirməsi)</div>
                   <div><b>Təyinat:</b> Qonaqlara avtomatik təsdiq mesajları və bildirişlər</div>
                 </div>

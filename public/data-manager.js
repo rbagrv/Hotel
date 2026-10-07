@@ -440,7 +440,7 @@ class HybridDB {
                 if (window.app && typeof window.app.loadAllData === 'function') {
                     console.log('HybridDB: Pulling latest data from server...');
                     await window.app.loadAllData();
-                    if (window.app.refreshCurrentModule) {
+                    if (window.app.refreshCurrentModule && window.app.currentModule !== 'dashboard') {
                         window.app.refreshCurrentModule();
                     }
                 }
@@ -947,8 +947,8 @@ class HybridDB {
                         return;
                     }
                     window.app.data[key] = updatedData;
-                    // Trigger UI refresh for the current module if it's affected
-                    if (window.app?.currentModule === key || (window.app?.currentModule === 'dashboard' && ['reservations', 'rooms', 'guests', 'cashTransactions'].includes(key))) {
+                    // Trigger UI refresh for the current module if it's affected (Dashboard is kept stable and does not auto-refresh)
+                    if (window.app?.currentModule === key && key !== 'dashboard') {
                         window.app?.refreshCurrentModule?.();
                     }
                     // NEW: If staff collection is updated, update AuthManager's internal cache

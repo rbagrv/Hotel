@@ -809,7 +809,7 @@ class ModuleRenderer {
                 <li><button class="settings-menu-btn${section === 'errors' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('errors')"><i class="fas fa-bug"></i> Sistem Xətaları</button></li>
                 <li><button class="settings-menu-btn${section === 'data' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('data')"><i class="fas fa-database"></i> Məlumatlar</button></li>
                 <li><button class="settings-menu-btn${section === 'rules' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('rules')"><i class="fas fa-fire"></i> Firebase Qaydaları</button></li>
-                <li><button class="settings-menu-btn${section === 'integrations' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('integrations')"><i class="fas fa-plug"></i> İnteqrasiyalar</button></li>
+                <li><button class="settings-menu-btn${section === 'integrations' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('integrations')"><i class="fas fa-plug"></i> Mikroservis & İnteqrasiyalar</button></li>
                 <li><button class="settings-menu-btn${section === 'audit' ? ' active' : ''}" onclick="window.moduleRenderer.selectSuperadminSection('audit')"><i class="fas fa-history"></i> Audit Jurnalı</button></li>
             </ul>
         </nav>
@@ -839,7 +839,7 @@ class ModuleRenderer {
           errors: 'Sistem Xətaları Jurnalı',
           data: 'Məlumatların İdarə Edilməsi',
           rules: 'Firebase Təhlükəsizlik Qaydaları',
-          integrations: 'İnteqrasiyalar',
+          integrations: 'Mikroservis və İnteqrasiyalar',
           audit: 'Audit Jurnalı'
       };
       return map[section] || 'Superadmin Panel';
@@ -1529,34 +1529,108 @@ ${error.stack || 'No stack trace available.'}
         settings: doorCardSettings
     }).outerHTML;
 
+    // 4. Get WhatsApp settings
+    const waSettings = window.app?.getSetting('whatsappSettings') || {};
+    const microserviceUrl = waSettings.microserviceUrl || window.app?.getSetting('whatsappMicroserviceUrl') || 'https://hotel-8wmp.onrender.com';
+    const notifyRes = waSettings.notifyOnReservation ?? true;
+    const notifyCancel = waSettings.notifyOnCancel ?? true;
+    const notifyPayment = waSettings.notifyOnPayment ?? true;
+    const notifyPos = waSettings.notifyOnPos ?? true;
+
     return `
         <div class="report-section">
-            <h4>WhatsApp və Telegram Bildiriş İnteqrasiyaları</h4>
-            <div class="report-grid">
-                <!-- WhatsApp Integration Card -->
-                <div class="operational-card" style="border: 1px solid rgba(37, 211, 102, 0.4); background: linear-gradient(135deg, rgba(37, 211, 102, 0.05) 0%, rgba(255, 255, 255, 1) 100%);">
-                    <div class="card-header">
-                        <h5 class="card-title">WhatsApp Mikroservis & Bildirişlər</h5>
-                        <i class="fab fa-whatsapp card-icon" style="background-color: #25D366; color: white;"></i>
+            <h4>WhatsApp Mikroservis Tənzimləmələri (Render Cloud)</h4>
+            <div class="table-container" style="padding: 1.5rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 1.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1.25rem; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <h5 style="margin:0 0 0.25rem 0; font-size:1.15rem; color:#1e293b; display:flex; align-items:center; gap:0.5rem;">
+                            <i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.4rem;"></i>
+                            WhatsApp Bildiriş və Mikroservis Mərkəzi
+                        </h5>
+                        <p style="margin:0; color:#64748b; font-size:0.875rem;">
+                            Rezervasiya təsdiqləri, ləğvlər, kassa qəbzləri və POS sifarişlərinin müştəriyə WhatsApp ilə avtomatik göndərilməsi.
+                        </p>
                     </div>
-                    <p>Rezervasiya qeydiyyatı, ləğv edilməsi, ödəniş qəbzləri və POS otaq xərclərinin müştəriyə WhatsApp ilə avtomatik çatdırılması.</p>
-                    <p style="margin-top:0.5em; font-size:0.9em; color:var(--text-light);">
-                        Status: <span style="color: #059669; font-weight: 600;"><i class="fas fa-check-circle"></i> Qoşulmağa Hazırdır</span> | 
-                        Port: <b>3001</b> / <b>Web Link Fallback</b>
-                    </p>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1em;">
-                        <button class="btn btn-primary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('qr')">
-                            <i class="fas fa-qrcode"></i> QR Kod ilə Qoşul
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('status')">
-                            <i class="fas fa-info-circle"></i> Server Statusu
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('send')">
-                            <i class="fas fa-paper-plane"></i> Test Göndər
-                        </button>
+                    <div id="saWaLiveStatusBadge" style="padding: 0.4rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; display:flex; align-items:center; gap:0.4rem;">
+                        <i class="fas fa-satellite-dish"></i> Cloud: https://hotel-8wmp.onrender.com
                     </div>
                 </div>
 
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#334155;">
+                            Mikroservis URL (Primary URL):
+                        </label>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input id="saWaMicroserviceUrl" type="text" class="form-control" value="${this.escapeAttr(microserviceUrl)}" placeholder="https://hotel-8wmp.onrender.com" style="flex:1;">
+                            <button type="button" class="btn btn-secondary" onclick="window.moduleRenderer.checkMicroserviceStatus()" style="white-space:nowrap;">
+                                <i class="fas fa-sync"></i> Yoxla
+                            </button>
+                        </div>
+                        <small style="color:#64748b; font-size:0.75rem; display:block; margin-top:0.3rem;">
+                            Render.com üzərində yerləşən WhatsApp serverinizin əsas linki.
+                        </small>
+                    </div>
+
+                    <div>
+                        <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#334155;">
+                            WhatsApp Sessiya & Cihaz Cütləşməsi:
+                        </label>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('qr')">
+                                <i class="fas fa-qrcode"></i> QR Kod ilə Qoşul
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('status')">
+                                <i class="fas fa-info-circle"></i> Statusa Bax
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.openWhatsAppModal && window.openWhatsAppModal('send')">
+                                <i class="fas fa-paper-plane"></i> Test Göndər
+                            </button>
+                        </div>
+                        <small style="color:#64748b; font-size:0.75rem; display:block; margin-top:0.3rem;">
+                            Telefonunuzun WhatsApp tətbiqindən "Linked Devices" (Bağlı cihazlar) ilə skan edin.
+                        </small>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+                    <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.6rem; color:#1e293b;">
+                        Avtomatik Bildiriş Hadisələri:
+                    </label>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem; font-size:0.85rem;">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="saWaNotifyRes" ${notifyRes ? 'checked' : ''}>
+                            <span>Yeni rezervasiya təsdiqi</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="saWaNotifyCancel" ${notifyCancel ? 'checked' : ''}>
+                            <span>Rezervasiya ləğvi bildirişi</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="saWaNotifyPayment" ${notifyPayment ? 'checked' : ''}>
+                            <span>Ödəniş qəbzi və borc qalığı</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="saWaNotifyPos" ${notifyPos ? 'checked' : ''}>
+                            <span>POS / Restoran otaq hesabı</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:1rem; flex-wrap:wrap; gap:0.75rem;">
+                    <span id="saWaStatusMessage" style="font-size:0.85rem; color:#64748b;">
+                        İlkin ünvan: <b>https://hotel-8wmp.onrender.com</b> (Vahid Cloud Mikroservis)
+                    </span>
+                    <button class="btn btn-primary" onclick="window.moduleRenderer.saveWhatsAppSettings()">
+                        <i class="fas fa-save"></i> Mikroservis Tənzimləmələrini Yadda Saxla
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h4>Telegram Bildirişləri</h4>
+            <div class="report-grid">
                 <!-- Telegram Integration Card -->
                 <div class="operational-card">
                     <div class="card-header">
@@ -1647,6 +1721,83 @@ async saveDoorCardSettings() {
         window.notificationManager?.showNotification('success', 'Saxlanıldı', 'Qapı kartı sistemi tənzimləmələri uğurla yadda saxlandı.');
     } catch (e) {
         window.notificationManager?.showNotification('error', 'Saxlanmadı', e.message);
+    }
+}
+
+async saveWhatsAppSettings() {
+    const urlInput = document.getElementById('saWaMicroserviceUrl');
+    const notifyRes = document.getElementById('saWaNotifyRes')?.checked;
+    const notifyCancel = document.getElementById('saWaNotifyCancel')?.checked;
+    const notifyPayment = document.getElementById('saWaNotifyPayment')?.checked;
+    const notifyPos = document.getElementById('saWaNotifyPos')?.checked;
+
+    const microserviceUrl = urlInput?.value?.trim() || 'https://hotel-8wmp.onrender.com';
+    const settings = {
+        microserviceUrl,
+        notifyOnReservation: !!notifyRes,
+        notifyOnCancel: !!notifyCancel,
+        notifyOnPayment: !!notifyPayment,
+        notifyOnPos: !!notifyPos,
+        updatedAt: new Date().toISOString()
+    };
+
+    try {
+        await window.app?.saveSetting?.('whatsappSettings', settings);
+        await window.app?.saveSetting?.('whatsappMicroserviceUrl', microserviceUrl);
+        window.notificationManager?.showNotification('success', 'Yadda saxlandı', 'WhatsApp mikroservis tənzimləmələri uğurla saxlanıldı.');
+        const statusEl = document.getElementById('saWaStatusMessage');
+        if (statusEl) {
+            statusEl.innerHTML = `<span style="color:#059669; font-weight:600;"><i class="fas fa-check-circle"></i> Tənzimləmələr saxlanıldı: ${microserviceUrl}</span>`;
+        }
+    } catch (e) {
+        window.notificationManager?.showNotification('error', 'Xəta', 'Tənzimləmələr saxlanmadı: ' + e.message);
+    }
+}
+
+async checkMicroserviceStatus() {
+    const urlInput = document.getElementById('saWaMicroserviceUrl');
+    const url = urlInput?.value?.trim() || 'https://hotel-8wmp.onrender.com';
+    const badge = document.getElementById('saWaLiveStatusBadge');
+    const statusMsg = document.getElementById('saWaStatusMessage');
+
+    if (badge) {
+        badge.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Yoxlanılır...`;
+        badge.style.background = '#fef3c7';
+        badge.style.color = '#92400e';
+        badge.style.border = '1px solid #fde68a';
+    }
+
+    try {
+        const res = await fetch(`/api/whatsapp/status?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        if (data.success && data.microserviceConnected) {
+            if (badge) {
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> Mikroservis Aktivdir`;
+                badge.style.background = '#ecfdf5';
+                badge.style.color = '#065f46';
+                badge.style.border = '1px solid #a7f3d0';
+            }
+            if (statusMsg) statusMsg.innerHTML = `<span style="color:#059669; font-weight:600;"><i class="fas fa-check-circle"></i> Server (${url}) ilə əlaqə quruldu.</span>`;
+            window.notificationManager?.showNotification('success', 'WhatsApp Status', 'Mikroservis aktivdir və cavab verir.');
+        } else {
+            if (badge) {
+                badge.innerHTML = `<i class="fas fa-info-circle"></i> Qoşulmağa Hazırdır`;
+                badge.style.background = '#eff6ff';
+                badge.style.color = '#1e40af';
+                badge.style.border = '1px solid #bfdbfe';
+            }
+            if (statusMsg) statusMsg.innerHTML = `<span style="color:#2563eb;"><i class="fas fa-info-circle"></i> ${data.message || 'Server cavab verir (QR cütləşməsi gözləyir)'}</span>`;
+            window.notificationManager?.showNotification('info', 'WhatsApp Status', data.message || 'Server hazırdır.');
+        }
+    } catch (err) {
+        if (badge) {
+            badge.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Əlaqə Xətası`;
+            badge.style.background = '#fef2f2';
+            badge.style.color = '#991b1b';
+            badge.style.border = '1px solid #fecaca';
+        }
+        if (statusMsg) statusMsg.innerHTML = `<span style="color:#dc2626;"><i class="fas fa-times-circle"></i> Xəta: ${err.message}</span>`;
+        window.notificationManager?.showNotification('error', 'WhatsApp Xətası', 'Serverlə əlaqə yaradıla bilmədi.');
     }
 }
 }

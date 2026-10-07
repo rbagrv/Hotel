@@ -2,12 +2,30 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const microserviceUrl = process.env.WHATSAPP_MICROSERVICE_URL || "http://localhost:3001";
+export async function GET(request) {
+  return handleQr(request);
+}
+
+export async function POST(request) {
+  return handleQr(request);
+}
+
+async function handleQr(request) {
+  let customUrl = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    customUrl = searchParams.get("url");
+    if (!customUrl && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      customUrl = body.url || body.microserviceUrl;
+    }
+  } catch (_) {}
+
+  const microserviceUrl = customUrl || process.env.WHATSAPP_MICROSERVICE_URL || "https://hotel-8wmp.onrender.com";
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
     const res = await fetch(`${microserviceUrl}/qr`, {
       signal: controller.signal,
@@ -23,7 +41,7 @@ export async function GET() {
     return NextResponse.json({
       success: false,
       connected: false,
-      message: "WhatsApp mikroservisi əlçatan deyil. Zəhmət olmasa, mikroservisi işə salın (whatsapp-microservice).",
+      message: `WhatsApp mikroservis (${microserviceUrl}) əlçatan deyil və ya QR hazır deyil.`,
     });
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

@@ -32,7 +32,7 @@ export async function POST(request) {
       );
     }
 
-    const microserviceUrl = process.env.WHATSAPP_MICROSERVICE_URL || "http://localhost:3001";
+    const microserviceUrl = body.url || body.microserviceUrl || process.env.WHATSAPP_MICROSERVICE_URL || "https://hotel-8wmp.onrender.com";
     let sentViaMicroservice = false;
     let microserviceError = null;
 
